@@ -2,6 +2,7 @@ import NextAuth, { User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { connectToDB } from "./lib/db";
 import { User as UserModel } from "./models";
+import { NextResponse } from "next/server";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -54,6 +55,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async authorized({ request, auth }) {
+      const { pathname } = request.nextUrl;
+
+      if (pathname.startsWith("/api/webhook")) {
+        return NextResponse.next();
+      }
+
+      // Auth Routes
+      if (
+        pathname.startsWith("/api/auth") ||
+        pathname === "/login" ||
+        pathname === "/register"
+      ) {
+        return NextResponse.next();
+      }
+
+      // Public Routes
+      if (
+        pathname.startsWith("/api/products") ||
+        pathname.startsWith("/products") ||
+        pathname === "/"
+      ) {
+        return NextResponse.next();
+      }
+
+      // Admin routes requires admin role
+      if (pathname.startsWith("/admin") && auth?.user.role === "admin") {
+        return NextResponse.next();
+      }
+
+      return !!auth;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

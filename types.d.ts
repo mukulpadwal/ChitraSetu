@@ -7,6 +7,11 @@ declare global {
     conn: Connection | null;
     promise: Promise<Connection> | null;
   };
+
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Razorpay: any;
+  }
 }
 
 declare module "next-auth" {

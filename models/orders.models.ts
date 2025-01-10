@@ -18,11 +18,11 @@ export interface IOrder {
   productId: mongoose.Types.ObjectId | PopulatedProduct;
   variant: ImageVariant;
   razorpayOrderId: string;
-  razorpayPaymentId: string;
+  razorpayPaymentId?: string;
   amount: number;
   status: "pending" | "completed" | "failed";
-  downloadUrl: string;
-  previewUrl: string;
+  downloadUrl?: string;
+  previewUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -56,32 +56,17 @@ const orderSchema = new Schema<IOrder>(
         enum: ["personal", "commercial"],
       },
     },
-    razorpayOrderId: {
-      type: String,
-      required: true,
-    },
-    razorpayPaymentId: {
-      type: String,
-      required: true,
-    },
-    amount: {
-      type: Number,
-      required: true,
-    },
+    razorpayOrderId: { type: String, required: true },
+    razorpayPaymentId: { type: String },
+    amount: { type: Number, required: true },
     status: {
       type: String,
       required: true,
       enum: ["pending", "completed", "failed"],
       default: "pending",
     },
-    downloadUrl: {
-      type: String,
-      required: true,
-    },
-    previewUrl: {
-      type: String,
-      required: true,
-    },
+    downloadUrl: { type: String },
+    previewUrl: { type: String },
   },
   {
     timestamps: true,

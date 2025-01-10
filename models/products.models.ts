@@ -33,9 +33,14 @@ export const IMAGE_VARIANTS = {
 export type ImageVariantType = keyof typeof IMAGE_VARIANTS;
 
 export interface ImageVariant {
-  type: ImageVariantType;
-  proce: number;
-  license: "personal" | "commercial";
+  type?: ImageVariantType;
+  price: number;
+  license?: "personal" | "commercial";
+  dimensions?: {
+    width?: number;
+    height?: number;
+  };
+  label?: string;
 }
 
 const imageVariantSchema = new Schema({

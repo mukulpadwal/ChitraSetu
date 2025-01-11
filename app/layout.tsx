@@ -5,6 +5,7 @@ import Script from "next/script";
 import Providers from "@/components/Providers";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Toaster } from "react-hot-toast";
 
 const sirinStencilSans = Sirin_Stencil({
   variable: "--font-sirin-stencil-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
+          <Toaster />
         </Providers>
       </body>
     </html>

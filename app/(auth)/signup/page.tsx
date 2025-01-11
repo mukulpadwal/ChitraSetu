@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ export default function Signup() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      console.error("Passwords do not match");
+      toast.error("Passwords do not match...");
       return;
     }
 
@@ -28,11 +29,12 @@ export default function Signup() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || "Registration failed");
+      if (!data.success) {
+        toast.error(data.message);
+      } else {
+        toast.success(data.message);
+        router.push("/login");
       }
-
-      router.push("/login");
     } catch (error) {
       console.error("Registration failed", error);
     }

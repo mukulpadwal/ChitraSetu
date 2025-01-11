@@ -1,33 +1,36 @@
 "use client";
 
-import { useNotification } from "@/components/Notification";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { showNotification } = useNotification();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const result = await signIn("credentials", {
+    signIn("credentials", {
       email,
       password,
-      redirect: true,
-      redirectTo: "/",
-    });
-
-    if (result?.error) {
-      showNotification(result.error, "error");
-    } else {
-      showNotification("Login successful!", "success");
-      router.push("/");
-    }
+      redirect: false,
+      redirectTo: "/products",
+    })
+      .then((response) => {
+        if (response?.ok) {
+          if (response.code) {
+            toast.error(response.code);
+          } else {
+            toast.success("Successfully Logged In...");
+            router.replace(response?.url as string);
+          }
+        }
+      })
+      .catch((error) => console.error(error?.message));
   };
 
   return (

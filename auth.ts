@@ -1,7 +1,11 @@
-import NextAuth, { User } from "next-auth";
+import NextAuth, { User, CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { connectToDB } from "./lib/db";
 import { User as UserModel } from "./models";
+
+class InvalidLoginError extends CredentialsSignin {
+  code = "Invalid Email or password";
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -32,13 +36,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const user = await UserModel.findOne({ email });
 
           if (!user) {
-            throw new Error("No user with this email exists...");
+            throw new InvalidLoginError();
           }
 
           const isPasswordValid = await user.isPasswordValid(password);
 
           if (!isPasswordValid) {
-            throw new Error("Invalid password...");
+            throw new InvalidLoginError();
           }
 
           return {

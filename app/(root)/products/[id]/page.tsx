@@ -1,0 +1,184 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { useSession } from "next-auth/react";
+import { Camera } from "lucide-react";
+import toast from "react-hot-toast";
+import { ImageVariant, IProduct } from "@/models/products.models";
+
+const ProductPage = () => {
+  const { id }: { id: string } = useParams();
+  const [product, setProduct] = useState<IProduct>();
+  const [selectedVariant, setSelectedVariant] = useState<ImageVariant>();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch(`/api/products/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success) {
+          toast.success(data.message);
+          setProduct(data?.data);
+          setSelectedVariant(data?.data?.variants[0]);
+        } else {
+          toast.error(data.message);
+          router.push("/products");
+        }
+      });
+  }, [id, router]);
+
+  const handleVariantChange = (type: string) => {
+    const selected = product?.variants.find(
+      (variant: ImageVariant) => variant.type === type
+    );
+    setSelectedVariant(selected);
+  };
+
+  async function handlePayment() {
+    const response = await fetch("/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: product?._id,
+        variant: selectedVariant,
+      }),
+    });
+
+    const data = await response.json();
+
+    const { orderId, amount, currency } = data.data;
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount,
+      currency,
+      name: "SnapTrade",
+      description: `${product?.name} - ${selectedVariant?.type} Version`,
+      order_id: orderId,
+      handler: function () {
+        router.push(`/orders/success/${orderId}`);
+      },
+      prefill: {
+        email: session?.user?.email,
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  }
+
+  return (
+    <>
+      {status === "loading" ? (
+        <div className="w-full h-screen flex justify-center items-center gap-2">
+          <Camera className="animate-pulse" size={25} />
+          Loading...
+        </div>
+      ) : (
+        <div className="max-w-7xl mx-auto p-6">
+          {/* Product Information */}
+          <Card className="flex flex-col lg:flex-row justify-center items-center">
+            <CardContent className="flex-1 p-6">
+              {product?.imageUrl ? (
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name || "Product image"}
+                  width={500}
+                  height={500}
+                  className="object-cover rounded-md shadow-lg"
+                />
+              ) : (
+                <div className="w-[500px] h-[500px] flex justify-center items-center bg-gray-200">
+                  No Image Available
+                </div>
+              )}
+            </CardContent>
+
+            <div className="flex-1 p-6">
+              <CardHeader>
+                <CardTitle>{product?.name as string}</CardTitle>
+                <CardDescription>{product?.description}</CardDescription>
+              </CardHeader>
+
+              {/* Variant Selector */}
+              <CardFooter className="flex flex-col gap-4">
+                <Select
+                  onValueChange={(type: string) => handleVariantChange(type)}
+                  value={selectedVariant?.type || ""}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Variant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {product?.variants.map((variant: ImageVariant) => (
+                      <SelectItem
+                        key={variant.type}
+                        value={variant.type as string}
+                      >
+                        {`${variant.type} - Rs ${variant.price}/-`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <div className="w-full flex flex-col justify-center items-center">
+                  {/* Add to Cart Button */}
+                  <Button className="w-full" variant="default">
+                    Add to Cart -{" "}
+                    {selectedVariant?.price
+                      ? `Rs ${selectedVariant.price}/-`
+                      : "N/A"}
+                  </Button>
+                  <hr />
+                  --- OR---
+                  <hr />
+                  {/* Buy Now Button */}
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={handlePayment}
+                  >
+                    Buy Now -{" "}
+                    {selectedVariant?.price
+                      ? `Rs ${selectedVariant.price}/-`
+                      : "N/A"}
+                  </Button>
+                </div>
+              </CardFooter>
+            </div>
+          </Card>
+
+          {/* Similar Products Component */}
+          <div className="mt-12">
+            <h2 className="text-xl font-semibold">Similar Products</h2>
+            {/* Similar products fetching logic and display goes here */}
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default ProductPage;

@@ -10,6 +10,9 @@ interface PopulatedProduct {
   _id: mongoose.Types.ObjectId;
   name: string;
   imageUrl: string;
+  previewUrl: string;
+  downloadUrl: string;
+  fileId: string;
 }
 
 export interface IOrder {
@@ -21,8 +24,6 @@ export interface IOrder {
   razorpayPaymentId?: string;
   amount: number;
   status: "pending" | "completed" | "failed";
-  downloadUrl?: string;
-  previewUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -65,8 +66,6 @@ const orderSchema = new Schema<IOrder>(
       enum: ["pending", "completed", "failed"],
       default: "pending",
     },
-    downloadUrl: { type: String },
-    previewUrl: { type: String },
   },
   {
     timestamps: true,

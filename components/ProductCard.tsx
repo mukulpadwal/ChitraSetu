@@ -20,11 +20,9 @@ import Image from "next/image";
 import { ImageVariant, IProduct } from "@/models/products.models";
 import { useState } from "react";
 
-interface ProductCardProps {
-  product: IProduct;
-}
 
-const ProductCard = ({ product }: ProductCardProps) => {
+
+const ProductCard = ({ product }: {product: IProduct}) => {
   const [selectedVariant, setSelectedVariant] = useState<ImageVariant | null>(
     null
   );
@@ -44,8 +42,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
       {/* Product Image */}
       <CardContent>
         <Image
-          src={product.imageUrl}
-          alt={product.name}
+          src={product?.previewUrl}
+          alt={product?.name}
           width={product?.variants[0]?.dimensions?.width || 100} // Use the first variant's dimensions for now
           height={product?.variants[0]?.dimensions?.height || 100}
           className="object-cover rounded-md"

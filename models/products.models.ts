@@ -66,6 +66,9 @@ export interface IProduct {
   name: string;
   description: string;
   imageUrl: string;
+  downloadUrl: string;
+  previewUrl: string;
+  fileId: string;
   variants: ImageVariant[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -85,6 +88,9 @@ const productSchema = new Schema<IProduct>(
       type: String,
       required: true,
     },
+    downloadUrl: { type: String },
+    previewUrl: { type: String },
+    fileId: { type: String },
     variants: [imageVariantSchema],
   },
   { timestamps: true }

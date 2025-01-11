@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       name,
       description,
       imageUrl,
-      variants: variants[0],
+      variants,
     });
 
     return NextResponse.json(

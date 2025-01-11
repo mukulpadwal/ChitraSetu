@@ -31,7 +31,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   
   return (
     <>
-      <div className="w-full md:h-screen grid grid-cols-1 md:grid-cols-12">
+      <div className="w-full md:min-h-screen grid grid-cols-1 md:grid-cols-12">
         {/* Sidebar */}
         <aside className="h-auto w-full md:col-span-4 lg:col-span-2 bg-gray-100 p-4 md:border-r">
           <ul className="flex flex-row flex-wrap justify-around md:justify-normal md:flex-col md:space-y-4">

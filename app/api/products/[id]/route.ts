@@ -12,7 +12,7 @@ export async function GET(
 
     await connectToDB();
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (id === undefined || !id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { message: "Invalid product id...", success: false },
         {

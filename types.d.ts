@@ -17,14 +17,14 @@ declare global {
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string;
+      id: mongoose.Types.ObjectId;
       email: string;
       role: string;
     } & DefaultSession["user"];
   }
 
   interface User {
-    id: string;
+    id: mongoose.Types.ObjectId;
     email: string;
     role: string;
   }

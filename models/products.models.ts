@@ -69,6 +69,7 @@ export interface IProduct {
   downloadUrl: string;
   previewUrl: string;
   fileId: string;
+  owner: mongoose.Types.ObjectId;
   variants: ImageVariant[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -88,6 +89,7 @@ const productSchema = new Schema<IProduct>(
       type: String,
       required: true,
     },
+    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
     downloadUrl: { type: String },
     previewUrl: { type: String },
     fileId: { type: String },

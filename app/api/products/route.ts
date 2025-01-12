@@ -53,8 +53,14 @@ export async function POST(request: NextRequest) {
 
     await connectToDB();
 
-    const { name, description, imageUrl, variants }: IProduct =
-      await request.json();
+    const {
+      name,
+      description,
+      imageUrl,
+      variants,
+      previewUrl,
+      fileId,
+    }: IProduct = await request.json();
 
     if (
       [name, description, imageUrl].some(
@@ -76,11 +82,25 @@ export async function POST(request: NextRequest) {
       description,
       imageUrl,
       variants,
+      previewUrl,
+      fileId,
+      downloadUrl: imageUrl,
+      owner: session.user.id,
     });
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          message: "Could not list your product...",
+          success: false,
+        },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json(
       {
-        message: "New Product created successfully...",
+        message: "New Product listed successfully...",
         data: product,
         success: true,
       },

@@ -60,7 +60,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
         </aside>
 
         <main className="md:col-span-8 lg:col-span-10 p-4">
-          <h1 className="text-center text-3xl font-bold my-4">Admin Page</h1>
+          <h1 className="text-center text-3xl font-bold my-4">Admin Section</h1>
           {children}
         </main>
       </div>

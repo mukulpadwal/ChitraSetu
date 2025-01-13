@@ -44,11 +44,9 @@ const ProductsPage = () => {
               <Link
                 key={product?._id?.toString()}
                 href={`/products/${product._id}`}
-                passHref
+                className="cursor-pointer"
               >
-                <div className="cursor-pointer">
-                  <ProductCard product={product} />
-                </div>
+                <ProductCard product={product} />\
               </Link>
             ))}
           </div>

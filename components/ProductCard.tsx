@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectContent, // Add SelectContent
+  SelectContent,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -24,12 +24,17 @@ import Loader from "./Loader";
 
 const ProductCard = ({ product }: { product: IProduct }) => {
   const { data: session, status } = useSession();
-  const [selectedVariant, setSelectedVariant] = useState<ImageVariant | null>(
-    null
+  const [selectedVariant, setSelectedVariant] = useState<ImageVariant>(
+    product?.variants[0]
   );
 
-  const handleVariantChange = (variant: ImageVariant) => {
-    setSelectedVariant(variant);
+  const handleVariantChange = (value: string) => {
+    const selectedVariant = product.variants.find(
+      (variant: ImageVariant) => variant.type === value
+    );
+    if (selectedVariant) {
+      setSelectedVariant(selectedVariant);
+    }
   };
 
   return (
@@ -38,41 +43,43 @@ const ProductCard = ({ product }: { product: IProduct }) => {
         <Loader />
       ) : (
         <Card className="max-w-xs mx-auto">
-          {/* Product Header */}
           <CardHeader>
             <CardTitle>{product.name}</CardTitle>
             <CardDescription>{product.description}</CardDescription>
           </CardHeader>
 
           {/* Product Image */}
-          <CardContent>
-            <Image
-              src={product?.previewUrl}
-              alt={product?.name}
-              width={product?.variants[0]?.dimensions?.width || 100}
-              height={product?.variants[0]?.dimensions?.height || 100}
-              className="object-cover rounded-md"
-            />
+          <CardContent className="w-full flex justify-center items-center">
+            {selectedVariant?.previewUrl?.trim()?.length > 0 ? (
+              <Image
+                src={selectedVariant?.previewUrl}
+                alt={product?.name}
+                width={selectedVariant.dimensions?.width || 200}
+                height={selectedVariant.dimensions?.height || 200}
+                className="object-cover rounded-md"
+              />
+            ) : (
+              <div className="w-[200px] h-[200px] flex justify-center items-center bg-gray-200">
+                No Image Available
+              </div>
+            )}
           </CardContent>
 
-          {/* Select Variant Dropdown */}
           <CardFooter className="flex flex-col gap-2">
             <Select
-              onValueChange={(value) =>
-                handleVariantChange(
-                  product.variants.find((variant) => variant.type === value)!
-                )
-              }
+              onValueChange={(value: string) => handleVariantChange(value)}
               value={selectedVariant?.type}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select Variant" />
               </SelectTrigger>
 
-              {/* Add SelectContent here to wrap SelectItems */}
               <SelectContent>
-                {product.variants.map((variant) => (
-                  <SelectItem key={variant.type} value={variant.type as string}>
+                {product.variants.map((variant: ImageVariant) => (
+                  <SelectItem
+                    key={`${variant._id}-${variant.type}`}
+                    value={variant.type}
+                  >
                     {`${variant?.label || variant.type} - Rs ${
                       variant.price
                     }/-`}
@@ -81,17 +88,14 @@ const ProductCard = ({ product }: { product: IProduct }) => {
               </SelectContent>
             </Select>
 
-            {/* Edit & Add to Cart Button. Functionality to be implemented */}
+            {/* Edit Button. Functionality to be implemented */}
             {product.owner === session?.user.id ? (
               <Button className="mt-2 w-full" variant="default">
                 Edit
               </Button>
             ) : (
               <Button className="mt-2 w-full" variant="default">
-                Add to Cart -{" "}
-                {selectedVariant?.price
-                  ? `Rs ${selectedVariant?.price}/-`
-                  : "N/A"}
+                View Full Details
               </Button>
             )}
           </CardFooter>

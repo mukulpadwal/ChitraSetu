@@ -1,3 +1,5 @@
+import ApiResponse from "@/lib/api-response";
+import { IProduct } from "@/models/products.models";
 import { connectToDB } from "@/lib/db";
 import { Product } from "@/models";
 
@@ -7,33 +9,22 @@ export async function GET() {
   try {
     await connectToDB();
 
-    const products = await Product.find({}).lean();
+    const products: IProduct[] = await Product.find({});
 
     if (!products || products.length === 0) {
-      return NextResponse.json(
-        {
-          message: "No products found...",
-          success: false,
-        },
-        { status: 404 }
-      );
+      return NextResponse.json(new ApiResponse("No products found...", 404), {
+        status: 404,
+      });
     }
 
     return NextResponse.json(
-      {
-        message: "All products fetched successfully...",
-        data: products,
-        success: true,
-      },
+      new ApiResponse("All products fetched successfully...", 200, products),
       { status: 200 }
     );
   } catch (error) {
     console.error("Something went wrong while getting the products ", error);
     return NextResponse.json(
-      {
-        message: "Internal server error while fetching products...",
-        success: false,
-      },
+      new ApiResponse("Internal server error while fetching products...", 500),
       { status: 500 }
     );
   }

@@ -47,6 +47,7 @@ export interface ImageVariant {
   downloadUrl: string;
   previewUrl: string;
   fileId: string;
+  _id?: mongoose.Types.ObjectId;
 }
 
 const imageVariantSchema = new Schema({

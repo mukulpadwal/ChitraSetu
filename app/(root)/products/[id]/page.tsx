@@ -55,7 +55,7 @@ const ProductPage = () => {
   };
 
   async function handlePayment() {
-    const response = await fetch("/api/orders", {
+    fetch("/api/orders/place", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,29 +64,33 @@ const ProductPage = () => {
         productId: product?._id,
         variant: selectedVariant,
       }),
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const { orderId, amount, currency, dbOrderId } = data.data;
 
-    const data = await response.json();
+          const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+            amount,
+            currency,
+            name: "SnapTrade",
+            description: `${product?.name} - ${selectedVariant?.type} Version`,
+            order_id: orderId,
+            handler: function () {
+              router.push(`/orders/success/${dbOrderId}`);
+            },
+            prefill: {
+              email: session?.user?.email,
+            },
+          };
 
-    const { orderId, amount, currency } = data.data;
-
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount,
-      currency,
-      name: "SnapTrade",
-      description: `${product?.name} - ${selectedVariant?.type} Version`,
-      order_id: orderId,
-      handler: function () {
-        router.push(`/orders/success/${orderId}`);
-      },
-      prefill: {
-        email: session?.user?.email,
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        } else {
+          toast.error(data.message);
+        }
+      });
   }
 
   return (
@@ -97,16 +101,16 @@ const ProductPage = () => {
           Loading...
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="md:max-w-7xl min-h-screen mx-auto p-4">
           {/* Product Information */}
-          <Card className="flex flex-col lg:flex-row justify-center items-center">
-            <CardContent className="flex-1 p-6">
-              {product?.imageUrl ? (
+          <Card className="min-h-screen flex flex-col md:flex-row justify-around items-center p-4">
+            <CardContent className="md:w-6/12 p-4 flex items-center justify-center">
+              {selectedVariant?.previewUrl?.trim() ? (
                 <Image
-                  src={product.imageUrl}
-                  alt={product.name || "Product image"}
-                  width={500}
-                  height={500}
+                  src={selectedVariant?.previewUrl}
+                  alt={product?.name || "Product image"}
+                  width={selectedVariant.dimensions?.width || 500}
+                  height={selectedVariant.dimensions?.height || 500}
                   className="object-cover rounded-md shadow-lg"
                 />
               ) : (
@@ -116,7 +120,7 @@ const ProductPage = () => {
               )}
             </CardContent>
 
-            <div className="flex-1 p-6">
+            <div className="md:w-6/12 p-4">
               <CardHeader>
                 <CardTitle>{product?.name as string}</CardTitle>
                 <CardDescription>{product?.description}</CardDescription>
@@ -125,7 +129,7 @@ const ProductPage = () => {
               {/* Variant Selector */}
               <CardFooter className="flex flex-col gap-4">
                 <Select
-                  onValueChange={(type: string) => handleVariantChange(type)}
+                  onValueChange={(value) => handleVariantChange(value)}
                   value={selectedVariant?.type || ""}
                 >
                   <SelectTrigger>
@@ -134,8 +138,8 @@ const ProductPage = () => {
                   <SelectContent>
                     {product?.variants.map((variant: ImageVariant) => (
                       <SelectItem
-                        key={variant.type}
-                        value={variant.type as string}
+                        key={`${variant._id}-${variant.type}`}
+                        value={variant.type}
                       >
                         {`${variant.type} - Rs ${variant.price}/-`}
                       </SelectItem>
@@ -143,38 +147,20 @@ const ProductPage = () => {
                   </SelectContent>
                 </Select>
 
-                <div className="w-full flex flex-col justify-center items-center">
-                  {/* Add to Cart Button */}
-                  <Button className="w-full" variant="default">
-                    Add to Cart -{" "}
-                    {selectedVariant?.price
-                      ? `Rs ${selectedVariant.price}/-`
-                      : "N/A"}
-                  </Button>
-                  <hr />
-                  --- OR---
-                  <hr />
-                  {/* Buy Now Button */}
-                  <Button
-                    className="w-full"
-                    variant="outline"
-                    onClick={handlePayment}
-                  >
-                    Buy Now -{" "}
-                    {selectedVariant?.price
-                      ? `Rs ${selectedVariant.price}/-`
-                      : "N/A"}
-                  </Button>
-                </div>
+                {/* Buy Now Button */}
+                <Button
+                  className="w-full"
+                  variant="default"
+                  onClick={handlePayment}
+                >
+                  Buy Now -{" "}
+                  {selectedVariant?.price
+                    ? `Rs ${selectedVariant.price}/-`
+                    : "N/A"}
+                </Button>
               </CardFooter>
             </div>
           </Card>
-
-          {/* Similar Products Component */}
-          <div className="mt-12">
-            <h2 className="text-xl font-semibold">Similar Products</h2>
-            {/* Similar products fetching logic and display goes here */}
-          </div>
         </div>
       )}
     </>

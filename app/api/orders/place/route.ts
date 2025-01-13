@@ -1,8 +1,10 @@
 import { auth } from "@/auth";
+import ApiResponse from "@/lib/api-response";
 import { connectToDB } from "@/lib/db";
 import { Order } from "@/models";
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
+import mongoose from "mongoose";
 
 const instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -13,26 +15,29 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session || session?.user) {
+    if (!session) {
       return NextResponse.json(
-        { message: "Unathorized Request...", success: false },
+        new ApiResponse("Unauthorized Request...", 400),
         { status: 401 }
       );
     }
 
     const { productId, variant } = await request.json();
 
-    if (
-      [productId, variant].some(
-        (field) => field?.trim() === "" || field === undefined
-      )
-    ) {
+    console.log({ productId, variant });
+
+    if (!mongoose.Types.ObjectId.isValid(productId) || !productId) {
+      return NextResponse.json(new ApiResponse("Invalid product id...", 400), {
+        status: 400,
+      });
+    }
+
+    if (variant.length === 0) {
       return NextResponse.json(
+        new ApiResponse("Please select a variant...", 400),
         {
-          message: "Some of the required data is missing...",
-          success: false,
-        },
-        { status: 401 }
+          status: 400,
+        }
       );
     }
 
@@ -40,20 +45,21 @@ export async function POST(request: NextRequest) {
 
     // Create razorpay order
     const order = await instance.orders.create({
-      amount: variant.price * 100,
+      amount: Math.round(Number(variant.price) * 100),
       currency: "INR",
       receipt: `recept-${Date.now()}`,
       notes: {
         productId: productId.toString(),
+        license: variant.license.toString(),
       },
     });
 
     const newOrder = await Order.create({
-      userId: session.user.id,
-      productId,
+      placedBy: session.user.id,
+      product: productId,
       variant,
       razorpayOrderId: order.id,
-      amount: variant.price * 100,
+      amount: Math.round(Number(variant.price) * 100),
       status: "pending",
     });
 

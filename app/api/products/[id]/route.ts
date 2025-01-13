@@ -2,6 +2,7 @@ import { connectToDB } from "@/lib/db";
 import { Product } from "@/models";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
+import ApiResponse from "@/lib/api-response";
 
 export async function GET(
   request: NextRequest,
@@ -13,19 +14,18 @@ export async function GET(
     await connectToDB();
 
     if (id === undefined || !id || !mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { message: "Invalid product id...", success: false },
-        {
-          status: 400,
-        }
-      );
+      return NextResponse.json(new ApiResponse("Invalid product id..", 400), {
+        status: 400,
+      });
     }
 
-    const product = await Product.findById(id).lean();
+    const product = await Product.findById(id).select(
+      "-variants.downloadUrl -createdAt -updatedAt -__v"
+    );
 
     if (!product) {
       return NextResponse.json(
-        { message: "No product with id found...", success: false },
+        new ApiResponse("No product with id found...", 404),
         {
           status: 404,
         }
@@ -33,11 +33,7 @@ export async function GET(
     }
 
     return NextResponse.json(
-      {
-        message: "Product with id fetched successfully...",
-        data: product,
-        success: true,
-      },
+      new ApiResponse("Product with id fetched successfully...", 200, product),
       {
         status: 200,
       }

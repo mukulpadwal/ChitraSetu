@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,29 +24,29 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "./ui/textarea";
 import FileUpload from "./FileUpload";
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props";
-import Image from "next/image";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
-const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
-const ACCEPTED_FILE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-const listProductFormSchema = z.object({
-  name: z.string({
-    required_error: "Name is required",
-    invalid_type_error: "Name must be a string",
-  }),
-  description: z.string({
-    required_error: "Description is required",
-    invalid_type_error: "Description must be a string",
-  }),
-  variants: z.enum(["SQUARE", "WIDE", "PORTRAIT"]),
+const singleProductFormSchema = z.object({
+  name: z
+    .string({
+      required_error: "Name is required.",
+      invalid_type_error: "Name must be a string.",
+    })
+    .min(2, {
+      message: "Name should contain minimum 2 characters.",
+    }),
+  description: z
+    .string({
+      required_error: "Description is required.",
+      invalid_type_error: "Description must be a string.",
+    })
+    .min(30, {
+      message: "Description should contain minimum 30 characters.",
+    }),
+  variant: z.enum(["SQUARE", "WIDE", "PORTRAIT"]),
   price: z.coerce
     .number({
       required_error: "Price is required",
@@ -55,55 +55,56 @@ const listProductFormSchema = z.object({
     .int()
     .positive(),
   license: z.enum(["personal", "commercial"]),
-  image: z
-    .instanceof(File, {
-      message: "Please select an image file.",
-    })
-    .optional()
-    .refine((file) => {
-      return !file || file?.size <= MAX_UPLOAD_SIZE;
-    }, "File size must be less than 3MB")
-    .refine((file) => {
-      return !file || ACCEPTED_FILE_TYPES.includes(file?.type);
-    }, "File must be a PNG"),
+  image: z.custom<IKUploadResponse | null>(),
 });
 
+type SingleProductFormSchema = z.infer<typeof singleProductFormSchema>;
+
 function SingleProductForm() {
-  const [uploadedImage, setUploadedImage] = useState<IKUploadResponse | null>(
-    null
-  );
-
   const router = useRouter();
+  const [isPending, setIsPending] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof listProductFormSchema>>({
-    resolver: zodResolver(listProductFormSchema),
+  const form = useForm<SingleProductFormSchema>({
+    resolver: zodResolver(singleProductFormSchema),
     defaultValues: {
       name: "",
       description: "",
-      variants: "SQUARE",
+      variant: "SQUARE",
       price: 0,
+      image: null,
       license: "commercial",
     },
   });
 
-  function onSubmit(values: z.infer<typeof listProductFormSchema>) {
+  function onSubmit(values: SingleProductFormSchema) {
+    if (values.image === null) {
+      toast.error("Kindly upload an image.");
+      return;
+    }
+
     const productData = {
       name: values.name,
       description: values.description,
-      imageUrl: uploadedImage?.url,
-      previewUrl: uploadedImage?.thumbnailUrl,
-      fileId: uploadedImage?.fileId,
       variants: [
         {
-          type: values.variants,
+          type: values.variant,
           price: values.price,
           license: values.license,
+          imageUrl: values?.image?.url,
+          downloadUrl: values?.image?.url,
+          previewUrl: values?.image?.thumbnailUrl,
+          fileId: values?.image?.fileId,
+          dimensions: {
+            width: values?.image?.width,
+            height: values?.image?.height,
+          },
         },
       ],
     };
 
-    // Add your API call logic here
-    fetch("/api/products", {
+    setIsPending(true);
+
+    fetch("/api/products/list", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -118,12 +119,10 @@ function SingleProductForm() {
         } else {
           toast.error(data.message);
         }
-      });
+      })
+      .catch(() => toast.error("Could not list your product..."))
+      .finally(() => setIsPending(false));
   }
-
-  const onSuccess = (response: IKUploadResponse) => {
-    setUploadedImage(response);
-  };
 
   return (
     <Form {...form}>
@@ -133,7 +132,10 @@ function SingleProductForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-lg"> Product Name</FormLabel>
+              <FormLabel className="font-bold text-lg">
+                {" "}
+                Product Name*
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter product name" {...field} />
               </FormControl>
@@ -149,7 +151,7 @@ function SingleProductForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-bold text-lg">
-                Product Description
+                Product Description*
               </FormLabel>
               <FormControl>
                 <Textarea
@@ -168,11 +170,11 @@ function SingleProductForm() {
 
         <FormField
           control={form.control}
-          name="variants"
+          name="variant"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-bold text-lg">
-                Select Variant
+                Select Variant*
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -201,7 +203,7 @@ function SingleProductForm() {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-lg">Price</FormLabel>
+              <FormLabel className="font-bold text-lg">Price*</FormLabel>
               <FormControl>
                 <Input placeholder="Enter price" type="number" {...field} />
               </FormControl>
@@ -217,7 +219,7 @@ function SingleProductForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-bold text-lg">
-                Select License
+                Select License*
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -241,41 +243,44 @@ function SingleProductForm() {
           )}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2">
-          <div className="col-span-1">
-            <FormField
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-bold text-lg">
-                    Upload Product Image
-                  </FormLabel>
+        <Controller
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-bold text-lg">
+                Upload Product Image*
+              </FormLabel>
 
-                  <FormControl>
-                    <FileUpload onSuccess={onSuccess} {...field} />
-                  </FormControl>
+              <FormControl>
+                <FileUpload
+                  onSuccess={(response: IKUploadResponse) => {
+                    field.onChange(response);
+                  }}
+                  {...field}
+                />
+              </FormControl>
 
-                  <FormDescription>Upload your image</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="col-span-1">
-            {uploadedImage && (
-              <Image
-                src={uploadedImage?.thumbnailUrl as string}
-                alt="Product Preview"
-                className="w-full max-h-64 object-contain border"
-                width={uploadedImage.width}
-                height={uploadedImage.height}
-              />
-            )}
-          </div>
-        </div>
+              <FormDescription>Upload your image</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <Button type="submit" className="w-full">
-          List
+        <Button
+          type="submit"
+          className={`w-full ${
+            isPending && "bg-slate-600 pointer-events-none"
+          }`}
+          disabled={isPending}
+        >
+          {isPending ? (
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className="animate-spin" /> Listing
+            </div>
+          ) : (
+            <>List</>
+          )}
         </Button>
       </form>
     </Form>

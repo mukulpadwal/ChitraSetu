@@ -1,8 +1,7 @@
-import { auth } from "@/auth";
 import { connectToDB } from "@/lib/db";
 import { Product } from "@/models";
-import { IProduct } from "@/models/products.models";
-import { NextRequest, NextResponse } from "next/server";
+
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
@@ -33,84 +32,6 @@ export async function GET() {
     return NextResponse.json(
       {
         message: "Internal server error while fetching products...",
-        success: false,
-      },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-
-    if (!session || session?.user?.role !== "admin") {
-      return NextResponse.json(
-        { message: "Unathorized Request...", success: false },
-        { status: 401 }
-      );
-    }
-
-    await connectToDB();
-
-    const {
-      name,
-      description,
-      imageUrl,
-      variants,
-      previewUrl,
-      fileId,
-    }: IProduct = await request.json();
-
-    if (
-      [name, description, imageUrl].some(
-        (field) => field?.trim() === "" || field === undefined
-      ) ||
-      variants.length === 0
-    ) {
-      return NextResponse.json(
-        {
-          message: "All fields are required...",
-          success: false,
-        },
-        { status: 400 }
-      );
-    }
-
-    const product = await Product.create({
-      name,
-      description,
-      imageUrl,
-      variants,
-      previewUrl,
-      fileId,
-      downloadUrl: imageUrl,
-      owner: session.user.id,
-    });
-
-    if (!product) {
-      return NextResponse.json(
-        {
-          message: "Could not list your product...",
-          success: false,
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        message: "New Product listed successfully...",
-        data: product,
-        success: true,
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Something went wrong while craeting the product ", error);
-    return NextResponse.json(
-      {
-        message: "Internal server error while creating a new product...",
         success: false,
       },
       { status: 500 }

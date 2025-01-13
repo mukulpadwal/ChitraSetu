@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import { ImageVariant, ImageVariantType } from "./products.models";
+import { ImageVariant } from "./products.models";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 interface PopulatedUser {
   _id: mongoose.Types.ObjectId;
@@ -9,16 +10,13 @@ interface PopulatedUser {
 interface PopulatedProduct {
   _id: mongoose.Types.ObjectId;
   name: string;
-  imageUrl: string;
-  previewUrl: string;
-  downloadUrl: string;
-  fileId: string;
+  description: string;
 }
 
 export interface IOrder {
   _id?: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId | PopulatedUser;
-  productId: mongoose.Types.ObjectId | PopulatedProduct;
+  placedBy: mongoose.Types.ObjectId | PopulatedUser;
+  product: mongoose.Types.ObjectId | PopulatedProduct;
   variant: ImageVariant;
   razorpayOrderId: string;
   razorpayPaymentId?: string;
@@ -30,31 +28,40 @@ export interface IOrder {
 
 const orderSchema = new Schema<IOrder>(
   {
-    userId: {
+    placedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
-    productId: {
+    product: {
       type: Schema.Types.ObjectId,
       ref: "Product",
       required: true,
+      index: true,
     },
     variant: {
       type: {
         type: String,
         required: true,
-        enum: ["SQUARE", "WIDE", "PORTRAIT"] as ImageVariantType[],
-        set: (v: string) => v.toUpperCase(),
+        enum: ["SQUARE", "WIDE", "PORTRAIT"],
       },
       price: {
         type: Number,
         required: true,
+        min: 0,
       },
       license: {
         type: String,
         required: true,
         enum: ["personal", "commercial"],
+      },
+      downloadUrl: { type: String },
+      previewUrl: { type: String },
+      fileId: { type: String },
+      imageUrl: {
+        type: String,
+        required: true,
       },
     },
     razorpayOrderId: { type: String, required: true },
@@ -63,7 +70,7 @@ const orderSchema = new Schema<IOrder>(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "completed", "failed"],
+      enum: ["pending", "completed", "failed", "refunded"],
       default: "pending",
     },
   },
@@ -71,6 +78,8 @@ const orderSchema = new Schema<IOrder>(
     timestamps: true,
   }
 );
+
+orderSchema.plugin(aggregatePaginate);
 
 export const Order =
   mongoose?.models?.Order || mongoose.model<IOrder>("Order", orderSchema);

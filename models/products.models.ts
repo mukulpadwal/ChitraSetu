@@ -1,11 +1,12 @@
 import mongoose, { Schema } from "mongoose";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const IMAGE_VARIANTS = {
   SQUARE: {
     type: "SQUARE",
     dimensions: {
       width: 1200,
-      height: 1200,
+      height: 1200, // Keeps the aspect ratio 1:1
     },
     label: "Square (1:1)",
     aspectRatio: "1:1",
@@ -13,8 +14,8 @@ export const IMAGE_VARIANTS = {
   WIDE: {
     type: "WIDE",
     dimensions: {
-      width: 1200,
-      height: 1200,
+      width: 1600, // Wider than the height
+      height: 900, // Aspect ratio 16:9
     },
     label: "Widescreen (16:9)",
     aspectRatio: "16:9",
@@ -22,8 +23,8 @@ export const IMAGE_VARIANTS = {
   PORTRAIT: {
     type: "PORTRAIT",
     dimensions: {
-      width: 1200,
-      height: 1200,
+      width: 900, // Narrower width for portrait
+      height: 1200, // Taller height for portrait
     },
     label: "Portrait (3:4)",
     aspectRatio: "3:4",
@@ -31,16 +32,22 @@ export const IMAGE_VARIANTS = {
 };
 
 export type ImageVariantType = keyof typeof IMAGE_VARIANTS;
+export type ImageVariantLabelType =
+  (typeof IMAGE_VARIANTS)[keyof typeof IMAGE_VARIANTS]["label"];
 
 export interface ImageVariant {
-  type?: ImageVariantType;
+  type: ImageVariantType;
   price: number;
-  license?: "personal" | "commercial";
+  license: "personal" | "commercial";
   dimensions?: {
     width?: number;
     height?: number;
   };
-  label?: string;
+  label: ImageVariantLabelType;
+  imageUrl: string;
+  downloadUrl: string;
+  previewUrl: string;
+  fileId: string;
 }
 
 const imageVariantSchema = new Schema({
@@ -59,16 +66,19 @@ const imageVariantSchema = new Schema({
     required: true,
     enum: ["personal", "commercial"],
   },
+  downloadUrl: { type: String },
+  previewUrl: { type: String },
+  fileId: { type: String },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
 });
 
 export interface IProduct {
   _id?: mongoose.Types.ObjectId;
   name: string;
   description: string;
-  imageUrl: string;
-  downloadUrl: string;
-  previewUrl: string;
-  fileId: string;
   owner: mongoose.Types.ObjectId;
   variants: ImageVariant[];
   createdAt?: Date;
@@ -85,18 +95,18 @@ const productSchema = new Schema<IProduct>(
       type: String,
       required: true,
     },
-    imageUrl: {
-      type: String,
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
+      index: true,
     },
-    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    downloadUrl: { type: String },
-    previewUrl: { type: String },
-    fileId: { type: String },
     variants: [imageVariantSchema],
   },
   { timestamps: true }
 );
+
+productSchema.plugin(aggregatePaginate);
 
 export const Product =
   mongoose?.models?.Product ||

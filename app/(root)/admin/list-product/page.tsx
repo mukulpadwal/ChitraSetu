@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SingleProductForm from "@/components/SingleProductForm";
-// import MultipleProductsForm from "@/components/MultipleProductsForm";
+import MultipleProductsForm from "@/components/MultipleProductsForm";
 
 function ListProductPage() {
   return (
@@ -21,7 +21,7 @@ function ListProductPage() {
           <SingleProductForm />
         </TabsContent>
         <TabsContent value="multiple">
-          {/* <MultipleProductsForm /> */}
+          <MultipleProductsForm />
         </TabsContent>
       </Tabs>
     </div>

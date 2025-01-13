@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 import { ImageVariant } from "./products.models";
-import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 interface PopulatedUser {
   _id: mongoose.Types.ObjectId;
@@ -78,8 +77,6 @@ const orderSchema = new Schema<IOrder>(
     timestamps: true,
   }
 );
-
-orderSchema.plugin(aggregatePaginate);
 
 export const Order =
   mongoose?.models?.Order || mongoose.model<IOrder>("Order", orderSchema);

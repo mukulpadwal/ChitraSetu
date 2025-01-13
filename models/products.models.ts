@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const IMAGE_VARIANTS = {
   SQUARE: {
@@ -43,7 +42,7 @@ export interface ImageVariant {
     width?: number;
     height?: number;
   };
-  label: ImageVariantLabelType;
+  label?: ImageVariantLabelType;
   imageUrl: string;
   downloadUrl: string;
   previewUrl: string;
@@ -105,8 +104,6 @@ const productSchema = new Schema<IProduct>(
   },
   { timestamps: true }
 );
-
-productSchema.plugin(aggregatePaginate);
 
 export const Product =
   mongoose?.models?.Product ||

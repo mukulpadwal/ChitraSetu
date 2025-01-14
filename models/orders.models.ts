@@ -20,7 +20,7 @@ export interface IOrder {
   razorpayOrderId: string;
   razorpayPaymentId?: string;
   amount: number;
-  status: "pending" | "completed" | "failed";
+  status: "pending" | "completed" | "failed" | "refunded";
   createdAt?: Date;
   updatedAt?: Date;
 }

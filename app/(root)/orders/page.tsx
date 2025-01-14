@@ -15,10 +15,12 @@ import { useSession } from "next-auth/react";
 import { IOrder, PopulatedProduct } from "@/models/orders.models";
 import toast from "react-hot-toast";
 import Loader from "@/components/Loader";
+import { useRouter } from "next/navigation";
 
 const OrdersPage = () => {
   const { status } = useSession();
   const [orders, setOrders] = useState<IOrder[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("/api/orders/user")
@@ -33,6 +35,21 @@ const OrdersPage = () => {
       });
   }, []);
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "failed":
+        return "bg-red-100 text-red-800";
+      case "refunded":
+        return "bg-blue-100 text-blue-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
   return (
     <>
       {status === "loading" ? (
@@ -41,10 +58,12 @@ const OrdersPage = () => {
         </div>
       ) : (
         <div className="max-w-7xl mx-auto p-6">
-          <h1 className="text-3xl font-semibold mb-6">My Orders</h1>
+          <h1 className="text-3xl font-semibold mb-6 text-gray-800">
+            My Orders
+          </h1>
 
           {orders.length === 0 ? (
-            <div>No orders found.</div>
+            <div className="text-gray-500">No orders found.</div>
           ) : (
             <div className="space-y-6">
               {orders.map((order: IOrder) => (
@@ -52,7 +71,7 @@ const OrdersPage = () => {
                   key={`${order?._id}-${
                     (order.product as PopulatedProduct).name
                   }`}
-                  className="flex flex-col lg:flex-row items-center"
+                  className="flex flex-col lg:flex-row items-center bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
                 >
                   {/* Image Section */}
                   <CardContent className="flex-1 flex justify-center items-center p-6">
@@ -68,29 +87,22 @@ const OrdersPage = () => {
                   {/* Details Section */}
                   <div className="flex-1 p-6">
                     <CardHeader>
-                      <CardTitle>
+                      <CardTitle className="text-xl font-semibold text-gray-800">
                         {(order.product as PopulatedProduct).name}
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-gray-600">
                         {order.variant.type} - Rs {order.variant.price}
                       </CardDescription>
-                      <div className="mt-2 text-sm text-gray-500">
-                        Status:{" "}
-                        <span
-                          className={`font-semibold ${
-                            order.status === "completed"
-                              ? "text-green-500"
-                              : order.status === "pending"
-                              ? "text-yellow-500"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {order.status}
-                        </span>
+                      <div
+                        className={`mt-2 text-sm font-semibold ${getStatusColor(
+                          order.status
+                        )}`}
+                      >
+                        Status: {order.status}
                       </div>
                       <div className="mt-2 text-sm text-gray-500">
                         Amount:{" "}
-                        <span className="font-semibold">
+                        <span className="font-semibold text-gray-800">
                           Rs {order.amount / 100}{" "}
                           {order.status === "failed" &&
                             "(Amount will be refunded in 5 to 7 business days in case the money was deducted from your account.)"}
@@ -98,12 +110,12 @@ const OrdersPage = () => {
                       </div>
                     </CardHeader>
 
-                    <CardFooter className="flex flex-col gap-2">
+                    <CardFooter className="flex flex-col gap-4 mt-4">
                       {order.status === "completed" && (
                         <>
                           {/* Preview URL */}
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             className="w-full"
                             onClick={() =>
                               window.open(order.variant.previewUrl, "_blank")
@@ -114,7 +126,7 @@ const OrdersPage = () => {
 
                           {/* Download URL */}
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className="w-full"
                             onClick={async () => {
                               try {
@@ -151,6 +163,34 @@ const OrdersPage = () => {
                           </Button>
                         </>
                       )}
+
+                      {order.status === "pending" && (
+                        <div className="text-yellow-500 text-sm">
+                          Your order is processing. Please wait.
+                        </div>
+                      )}
+
+                      {order.status === "failed" && (
+                        <div className="text-red-500 text-sm">
+                          Payment failed. Please try again.
+                        </div>
+                      )}
+
+                      {order.status === "refunded" && (
+                        <div className="text-blue-500 text-sm">
+                          Your order has been refunded.
+                        </div>
+                      )}
+
+                      <Button
+                        variant="default"
+                        className="w-full"
+                        onClick={() =>
+                          router.push(`/orders/success/${order._id}`)
+                        }
+                      >
+                        View Invoice
+                      </Button>
                     </CardFooter>
                   </div>
                 </Card>

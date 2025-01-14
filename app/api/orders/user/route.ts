@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import ApiResponse from "@/lib/api-response";
 import { connectToDB } from "@/lib/db";
 import { Order } from "@/models";
 import { NextResponse } from "next/server";
@@ -7,7 +8,7 @@ export async function GET() {
   try {
     const session = await auth();
 
-    if (!session || session?.user) {
+    if (!session) {
       return NextResponse.json(
         { message: "Unathorized Request...", success: false },
         { status: 401 }
@@ -16,23 +17,18 @@ export async function GET() {
 
     await connectToDB();
 
-    const orders = await Order.find({ userId: session.user.id })
+    const orders = await Order.find({ placedBy: session.user.id })
       .populate({
-        path: "productId",
-        select: "namme imageUrl",
+        path: "product",
+        select: "name description",
         options: {
           strictPopulate: false,
         },
       })
-      .sort({ createdAt: -1 })
-      .lean();
+      .sort({ createdAt: -1 }).select("-razorpayOrderId");
 
     return NextResponse.json(
-      {
-        message: "User orders fetched successfully...",
-        data: orders,
-        success: true,
-      },
+      new ApiResponse("User orders fetched successfully...", 200, orders),
       { status: 200 }
     );
   } catch (error) {

@@ -1,12 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 import { ImageVariant } from "./products.models";
 
-interface PopulatedUser {
+export interface PopulatedUser {
   _id: mongoose.Types.ObjectId;
   email: string;
 }
 
-interface PopulatedProduct {
+export interface PopulatedProduct {
   _id: mongoose.Types.ObjectId;
   name: string;
   description: string;

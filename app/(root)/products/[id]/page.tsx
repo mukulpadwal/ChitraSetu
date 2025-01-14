@@ -35,7 +35,6 @@ const ProductPage = () => {
     fetch(`/api/products/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.success) {
           toast.success(data.message);
           setProduct(data?.data);

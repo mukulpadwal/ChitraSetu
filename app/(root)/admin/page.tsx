@@ -11,6 +11,10 @@ function AdminPage() {
   const handleChangeRole = async () => {
     await fetch("/api/auth/change-role", {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ role: "admin" }),
     })
       .then((response) => response.json())
       .then((data) => {

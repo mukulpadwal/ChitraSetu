@@ -1,21 +1,21 @@
 import { auth } from "@/auth";
+import ApiResponse from "@/lib/api-response";
 import { connectToDB } from "@/lib/db";
 import { User } from "@/models";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function PATCH() {
+export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
 
     if (!session) {
       return NextResponse.json(
-        {
-          message: "Unauthorized Request",
-          success: false,
-        },
+        new ApiResponse("Unauthorized Request...", 400),
         { status: 400 }
       );
     }
+
+    const { role } = await request.json();
 
     await connectToDB();
 
@@ -23,7 +23,7 @@ export async function PATCH() {
       session.user.id,
       {
         $set: {
-          role: "admin",
+          role,
         },
       },
       {
@@ -33,10 +33,7 @@ export async function PATCH() {
 
     if (!user) {
       return NextResponse.json(
-        {
-          message: "Could not change role...",
-          success: false,
-        },
+        new ApiResponse("Could not change role...", 400),
         {
           status: 400,
         }
@@ -44,11 +41,7 @@ export async function PATCH() {
     }
 
     return NextResponse.json(
-      {
-        message: "Role changed successfully...",
-        data: user,
-        success: true,
-      },
+      new ApiResponse("Role changed successfully...", 200, user),
       {
         status: 200,
       }
@@ -56,10 +49,7 @@ export async function PATCH() {
   } catch (error) {
     console.error("Something went wrong while changing user role ", error);
     return NextResponse.json(
-      {
-        message: "Internal Server error while changing your role...",
-        success: false,
-      },
+      new ApiResponse("Internal Server error while changing your role...", 500),
       { status: 500 }
     );
   }

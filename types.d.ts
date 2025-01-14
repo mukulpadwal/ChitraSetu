@@ -19,14 +19,14 @@ declare module "next-auth" {
     user: {
       id: mongoose.Types.ObjectId;
       email: string;
-      role: string;
+      role: "admin" | "user";
     } & DefaultSession["user"];
   }
 
   interface User {
     id: mongoose.Types.ObjectId;
     email: string;
-    role: string;
+    role: "admin" | "user";
   }
 }
 

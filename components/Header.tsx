@@ -112,21 +112,30 @@ function Header() {
                 {/* Simple Links for Admin, Orders, Profile on Mobile */}
                 <Button
                   variant="link"
-                  onClick={() => router.push("/admin")}
+                  onClick={() => {
+                    router.push("/admin");
+                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                  }}
                   className="flex items-center gap-1"
                 >
                   Admin
                 </Button>
                 <Button
                   variant="link"
-                  onClick={() => router.push("/orders")}
+                  onClick={() => {
+                    router.push("/orders");
+                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                  }}
                   className="flex items-center gap-1"
                 >
                   Orders
                 </Button>
                 <Button
                   variant="link"
-                  onClick={() => router.push("/profile")}
+                  onClick={() => {
+                    router.push("/profile");
+                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                  }}
                   className="flex items-center gap-1"
                 >
                   Profile
@@ -145,14 +154,20 @@ function Header() {
               <div className="flex flex-col gap-2">
                 <Button
                   variant="link"
-                  onClick={() => router.push("/login")}
+                  onClick={() => {
+                    router.push("/login");
+                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                  }}
                   className="flex items-center gap-1"
                 >
                   <LogIn /> Login
                 </Button>
                 <Button
                   variant="default"
-                  onClick={() => router.push("/signup")}
+                  onClick={() => {
+                    router.push("/signup");
+                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                  }}
                   className="flex items-center gap-1"
                 >
                   <SquareArrowRight /> Signup

@@ -113,7 +113,7 @@ const ProductPage = () => {
                   className="object-cover rounded-md shadow-lg"
                 />
               ) : (
-                <div className="w-[500px] h-[500px] flex justify-center items-center bg-gray-200">
+                <div className="w-[225px] h-[225px] sm:w-[500px] sm:h-[500px] flex justify-center items-center bg-gray-200">
                   No Image Available
                 </div>
               )}

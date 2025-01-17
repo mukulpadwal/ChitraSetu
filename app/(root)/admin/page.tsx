@@ -1,7 +1,8 @@
 "use client";
 
+import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
-import { CameraIcon, VerifiedIcon } from "lucide-react";
+import { VerifiedIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
@@ -30,13 +31,10 @@ function AdminPage() {
   return (
     <>
       {status === "loading" ? (
-        <div className="h-screen w-full flex justify-center items-center">
-          <CameraIcon className="animate-pulse text-gray-500 w-8 h-8" />
-          <span className="ml-2 text-gray-600">Loading...</span>
-        </div>
+        <Loader />
       ) : (
-        <div className="w-full h-screen flex flex-col items-center justify-start p-4">
-          <h2 className="w-full text-lg font-bold text-center mb-2">
+        <div className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-white rounded-lg shadow-lg">
+          <h2 className="w-full text-lg font-bold text-center mb-2 text-gray-800">
             Welcome, <span>{session?.user.email}</span>
           </h2>
 

@@ -76,14 +76,14 @@ const ProfilePage = () => {
       {status === "loading" ? (
         <Loader />
       ) : (
-        <div className="max-w-2xl mx-auto p-6 space-y-6 bg-white rounded-lg shadow-lg">
+        <div className="max-w-2xl mx-auto p-8 space-y-6 bg-white rounded-lg shadow-lg">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-bold text-lg">
+                    <FormLabel className="font-bold text-lg text-gray-800">
                       Email Address
                     </FormLabel>
                     <FormControl>
@@ -108,7 +108,7 @@ const ProfilePage = () => {
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-bold text-lg">
+                    <FormLabel className="font-bold text-lg text-gray-800">
                       User Role*
                     </FormLabel>
                     <Select
@@ -134,7 +134,11 @@ const ProfilePage = () => {
               />
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full" disabled={isPending}>
+              <Button
+                type="submit"
+                className="w-full py-3 text-white bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                disabled={isPending}
+              >
                 {isPending ? (
                   <span className="flex flex-row items-center justify-center gap-2">
                     <Loader2 className="animate-spin" />

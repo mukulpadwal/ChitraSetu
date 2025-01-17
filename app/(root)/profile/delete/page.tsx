@@ -39,7 +39,7 @@ export default function DeleteAccountPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200">
+    <div className="flex justify-center items-center min-h-screen">
       <Dialog>
         <DialogTrigger asChild>
           <Button

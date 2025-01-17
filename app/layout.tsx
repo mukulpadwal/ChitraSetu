@@ -32,7 +32,9 @@ export default function RootLayout({
         />
         <Providers>
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen bg-gradient-to-r from-gray-100 to-white p-6">
+            {children}
+          </main>
           <Footer />
           <Toaster />
         </Providers>

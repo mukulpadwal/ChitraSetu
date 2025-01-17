@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,49 +11,54 @@ import Loader from "@/components/Loader";
 
 const ProductsPage = () => {
   const { status } = useSession();
-
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch("/api/products")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          toast.success(data.message);
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/products");
+        const data = await response.json();
+
+        if (response.ok) {
           setProducts(data.data);
+          toast.success(data.message);
         } else {
           toast.error(data.message);
         }
-      });
+      } catch (error) {
+        toast.error("Failed to load products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  return (
-    <>
-      {status === "loading" ? (
-        <Loader />
-      ) : (
-        <div className="max-w-7xl mx-auto p-6">
-          <h1 className="text-3xl font-semibold text-center mb-8">
-            Our Products
-          </h1>
-          <p className="text-center mb-12 text-lg text-gray-600">
-            Explore our collection of high-quality products.
-          </p>
+  if (loading || status === "loading") {
+    return <Loader />;
+  }
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <Link
-                key={product?._id?.toString()}
-                href={`/products/${product._id}`}
-                className="cursor-pointer"
-              >
-                <ProductCard product={product} />\
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-    </>
+  return (
+    <div className="max-w-7xl mx-auto p-6">
+      <h1 className="text-3xl font-semibold text-center mb-8">Our Products</h1>
+      <p className="text-center mb-12 text-lg text-gray-600">
+        Explore our collection of high-quality products.
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.map((product) => (
+          <Link
+            key={product?._id?.toString()}
+            href={`/products/${product._id}`}
+            className="cursor-pointer"
+          >
+            <ProductCard product={product} />
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 };
 

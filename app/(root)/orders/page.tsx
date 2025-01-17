@@ -53,30 +53,28 @@ const OrdersPage = () => {
   return (
     <>
       {status === "loading" ? (
-        <div>
+        <div className="flex justify-center items-center h-screen">
           <Loader />
         </div>
       ) : (
         <div className="max-w-7xl mx-auto p-6">
-          <h1 className="text-3xl font-semibold mb-6 text-gray-800">
+          <h1 className="text-3xl font-semibold mb-6 text-gray-800 text-center">
             My Orders
           </h1>
 
           {orders.length === 0 ? (
-            <div className="text-gray-500">No orders found.</div>
+            <div className="text-gray-500 text-center">No orders found.</div>
           ) : (
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {orders.map((order: IOrder) => (
                 <Card
-                  key={`${order?._id}-${
-                    (order.product as PopulatedProduct).name
-                  }`}
-                  className="flex flex-col lg:flex-row items-center bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
+                  key={`${order?._id}-${(order.product as PopulatedProduct).name}`}
+                  className="flex flex-col bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
                 >
                   {/* Image Section */}
-                  <CardContent className="flex-1 flex justify-center items-center p-6">
+                  <CardContent className="flex justify-center items-center p-4">
                     <Image
-                      src={order?.variant?.imageUrl}
+                      src={order?.variant?.imageUrl || "/placeholder.png"}
                       alt={(order.product as PopulatedProduct).name}
                       width={150}
                       height={150}
@@ -85,7 +83,7 @@ const OrdersPage = () => {
                   </CardContent>
 
                   {/* Details Section */}
-                  <div className="flex-1 p-6">
+                  <div className="flex-1 p-4">
                     <CardHeader>
                       <CardTitle className="text-xl font-semibold text-gray-800">
                         {(order.product as PopulatedProduct).name}
@@ -94,9 +92,7 @@ const OrdersPage = () => {
                         {order.variant.type} - Rs {order.variant.price}
                       </CardDescription>
                       <div
-                        className={`mt-2 text-sm font-semibold ${getStatusColor(
-                          order.status
-                        )}`}
+                        className={`mt-2 text-sm font-semibold ${getStatusColor(order.status)}`}
                       >
                         Status: {order.status}
                       </div>
@@ -111,9 +107,9 @@ const OrdersPage = () => {
                     </CardHeader>
 
                     <CardFooter className="flex flex-col gap-4 mt-4">
+                      {/* Actions based on Order Status */}
                       {order.status === "completed" && (
                         <>
-                          {/* Preview URL */}
                           <Button
                             variant="secondary"
                             className="w-full"
@@ -124,14 +120,12 @@ const OrdersPage = () => {
                             View Preview
                           </Button>
 
-                          {/* Download URL */}
                           <Button
                             variant="outline"
                             className="w-full"
                             onClick={async () => {
                               try {
                                 const imageUrl = order.variant.imageUrl;
-
                                 const response = await fetch(imageUrl, {
                                   mode: "cors",
                                 });
@@ -140,22 +134,16 @@ const OrdersPage = () => {
                                   toast.error("Failed to fetch image");
                                   return;
                                 }
+
                                 const blob = await response.blob();
-
                                 const blobUrl = URL.createObjectURL(blob);
-
                                 const link = document.createElement("a");
                                 link.href = blobUrl;
                                 link.download = "product-image.png";
-
                                 link.click();
-
                                 URL.revokeObjectURL(blobUrl);
                               } catch (error) {
-                                console.error(
-                                  "Error downloading the image:",
-                                  error
-                                );
+                                console.error("Error downloading the image:", error);
                               }
                             }}
                           >

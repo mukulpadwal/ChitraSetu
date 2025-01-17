@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { Camera } from "lucide-react";
+import { Aperture } from "lucide-react";
 
 type Order = {
   _id: string;
@@ -43,7 +43,7 @@ function Dashboard({ data }: { data: DashboardData }) {
     <>
       {data.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-10 bg-gray-50 border rounded-lg shadow-md">
-          <Camera className="w-16 h-16 text-gray-400 mb-4" />
+          <Aperture className="w-16 h-16 text-gray-400 mb-4" />
           <h2 className="text-xl font-semibold text-gray-700">
             No Data Available
           </h2>
@@ -61,7 +61,7 @@ function Dashboard({ data }: { data: DashboardData }) {
                 className="p-4 shadow-md border border-gray-200 rounded-lg"
               >
                 <CardHeader>
-                  <h2 className="text-lg font-semibold capitalize">
+                  <h2 className="text-lg font-semibold capitalize text-gray-800">
                     {group._id}
                   </h2>
                 </CardHeader>
@@ -94,7 +94,7 @@ function Dashboard({ data }: { data: DashboardData }) {
                           className="w-20 h-20 rounded-lg object-cover mb-4 sm:mb-0 sm:w-24 sm:h-24 flex-shrink-0"
                         />
                         <div className="flex-1 min-w-[160px] sm:ml-4">
-                          <h3 className="text-md font-semibold">
+                          <h3 className="text-md font-semibold text-gray-800">
                             {order.variant.type}
                           </h3>
                           <p className="text-xs sm:text-sm text-gray-600">

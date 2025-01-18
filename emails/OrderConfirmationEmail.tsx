@@ -169,10 +169,13 @@ const OrderConfirmationEmail = ({
             <Column align="center" style={block}>
               <Img
                 src={`${baseUrl}/_next/image?url=%2Flogo.png&w=128&q=75`}
-                width="60"
-                height="17"
+                width="100"
+                height="100"
                 alt="SnapTrade Logo"
               />
+            </Column>
+            <Column align="center" style={block}>
+              &copy; {new Date().getFullYear()} | All Rights Reserved
             </Column>
           </Row>
         </Section>

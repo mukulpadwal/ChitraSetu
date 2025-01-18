@@ -24,8 +24,6 @@ export async function POST(request: NextRequest) {
 
     const { productId, variant } = await request.json();
 
-    console.log({ productId, variant });
-
     if (!mongoose.Types.ObjectId.isValid(productId) || !productId) {
       return NextResponse.json(new ApiResponse("Invalid product id...", 400), {
         status: 400,

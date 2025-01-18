@@ -1,7 +1,5 @@
-import NextAuth, { User, CredentialsSignin } from "next-auth";
+import NextAuth, { CredentialsSignin, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { connectToDB } from "./lib/db";
-import { User as UserModel } from "./models";
 
 class InvalidLoginError extends CredentialsSignin {
   code = "Invalid Email or password";
@@ -18,37 +16,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (
         credentials: Partial<Record<"email" | "password", unknown>>
       ): Promise<User | null> => {
-        await connectToDB();
-
         try {
           const { email, password } = credentials;
 
-          if (
-            [email, password].some(
-              (field) =>
-                field === undefined ||
-                (typeof field === "string" && field.trim() === "")
-            )
-          ) {
-            throw new Error("Email and Password are required...");
-          }
+          const response = await fetch(
+            `${process.env.API_ENDPOINT}/api/auth/login`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            }
+          );
 
-          const user = await UserModel.findOne({ email });
+          const data = await response.json();
 
-          if (!user) {
-            throw new InvalidLoginError();
-          }
-
-          const isPasswordValid = await user.isPasswordValid(password);
-
-          if (!isPasswordValid) {
+          if (!data.success) {
             throw new InvalidLoginError();
           }
 
           return {
-            id: user?._id?.toString(),
-            email: user?.email,
-            role: user?.role,
+            id: data.data?._id?.toString(),
+            email: data.data?.email,
+            role: data.data?.role,
           };
         } catch (error) {
           console.error("Auth JS Login Error...", error);
@@ -75,7 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
-        session.user.role = token.role as string;
+        session.user.role = token.role as "admin" | "user";
       }
 
       return session;

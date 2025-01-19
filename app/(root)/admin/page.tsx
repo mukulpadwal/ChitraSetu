@@ -4,10 +4,12 @@ import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { VerifiedIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 function AdminPage() {
   const { data: session, update, status } = useSession();
+  const router = useRouter();
 
   const handleChangeRole = async () => {
     await fetch("/api/auth/change-role", {
@@ -22,6 +24,7 @@ function AdminPage() {
         if (data.success) {
           update({ role: data.data.role });
           toast.success(data.message);
+          router.refresh();
         } else {
           toast.error(data.message);
         }

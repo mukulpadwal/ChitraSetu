@@ -49,13 +49,10 @@ const ProductsPage = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <Link
-            key={product?._id?.toString()}
-            href={`/products/${product._id}`}
-            className="cursor-pointer"
-          >
-            <ProductCard product={product} />
-          </Link>
+          <ProductCard
+            key={`${product._id}-${product.name}`}
+            product={product}
+          />
         ))}
       </div>
     </div>

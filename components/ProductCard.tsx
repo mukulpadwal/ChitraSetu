@@ -21,16 +21,18 @@ import { ImageVariant, IProduct } from "@/models/products.models";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Loader from "./Loader";
+import { Eye, Loader2, Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import mongoose from "mongoose";
+import toast from "react-hot-toast";
 
-interface ProductCardProps {
-  product: IProduct;
-}
-
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product }: { product: IProduct }) => {
   const { data: session, status } = useSession();
   const [selectedVariant, setSelectedVariant] = useState<ImageVariant>(
-    product?.variants[0] || {} as ImageVariant
+    product?.variants[0] || ({} as ImageVariant)
   );
+  const router = useRouter();
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   const handleVariantChange = (value: string) => {
     const selectedVariant = product.variants.find(
@@ -39,6 +41,36 @@ const ProductCard = ({ product }: ProductCardProps) => {
     if (selectedVariant) {
       setSelectedVariant(selectedVariant);
     }
+  };
+
+  const handleEditProduct = async (id: mongoose.Types.ObjectId | undefined) => {
+    router.push(`/products/edit/${id}`);
+    // TODO
+  };
+
+  const handleDeleteProduct = async (
+    id: mongoose.Types.ObjectId | undefined
+  ) => {
+    setIsPending(true);
+    fetch(`/api/products/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(""),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch(() =>
+        toast.error("Something went wrong while deleting the product...")
+      )
+      .finally(() => setIsPending(false));
   };
 
   if (status === "loading") {
@@ -52,7 +84,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <CardDescription>{product.description}</CardDescription>
       </CardHeader>
 
-      {/* Product Image */}
       <CardContent className="w-full flex justify-center items-center">
         {selectedVariant?.previewUrl?.trim()?.length > 0 ? (
           <Image
@@ -70,7 +101,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2">
-        {/* Variant Selector */}
         <Select
           onValueChange={(value: string) => handleVariantChange(value)}
           value={selectedVariant?.type}
@@ -91,14 +121,38 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </SelectContent>
         </Select>
 
-        {/* Button (Edit for owner, View Full Details for others) */}
         {product.owner === session?.user.id ? (
-          <Button className="mt-2 w-full" variant="default">
-            Edit
-          </Button>
+          <div className="w-full flex flex-row justify-center items-center gap-2">
+            <Button
+              className="w-full flex flex-row items-center justify-center"
+              variant="default"
+              onClick={() => handleEditProduct(product?._id)}
+            >
+              <Pencil /> Edit
+            </Button>
+            <Button
+              variant="destructive"
+              className="w-full flex flex-row items-center justify-center"
+              onClick={() => handleDeleteProduct(product?._id)}
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="animate-spin" /> Deleting
+                </>
+              ) : (
+                <>
+                  <Trash2 /> Delete
+                </>
+              )}
+            </Button>
+          </div>
         ) : (
-          <Button className="mt-2 w-full" variant="default">
-            View Full Details
+          <Button
+            variant="default"
+            className="w-full flex flex-row items-center justify-center"
+            onClick={() => router.push(`/products/${product._id}`)}
+          >
+            <Eye /> View Full Details
           </Button>
         )}
       </CardFooter>

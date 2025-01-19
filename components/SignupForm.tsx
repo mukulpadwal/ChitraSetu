@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Aperture } from "lucide-react";
+import { Aperture, Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "./ui/input";
+import { useState } from "react";
 
 const signupFormSchema = z
   .object({
@@ -48,10 +49,12 @@ function SignupForm() {
       confirmPassword: "",
     },
   });
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   const router = useRouter();
 
   const onSubmit = (value: SignupFormSchemaType) => {
+    setIsPending(true);
     fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -65,7 +68,9 @@ function SignupForm() {
         } else {
           toast.error(data.message);
         }
-      });
+      })
+      .catch(() => toast.error("An error occurred. Please try again later."))
+      .finally(() => setIsPending(false));
   };
 
   return (
@@ -146,9 +151,17 @@ function SignupForm() {
           <Button
             variant={"default"}
             type="submit"
-            className="w-full py-3 font-semibold text-white bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className="w-full"
+            disabled={isPending}
           >
-            Sign Up
+            {isPending ? (
+              <div className="flex flex-row items-center justify-center gap-2">
+                <Loader2 className="animate-spin" />
+                Creating account
+              </div>
+            ) : (
+              "Create Account"
+            )}
           </Button>
         </form>
       </Form>

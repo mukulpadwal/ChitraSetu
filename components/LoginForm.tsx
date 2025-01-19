@@ -17,7 +17,8 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { Input } from "./ui/input";
-import { Aperture } from "lucide-react";
+import { Aperture, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const loginFormSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -34,10 +35,12 @@ function LoginForm() {
       password: "",
     },
   });
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   const router = useRouter();
 
   const onSubmit = (value: LoginFormSchemaType) => {
+    setIsPending(true);
     signIn("credentials", {
       email: value.email,
       password: value.password,
@@ -54,7 +57,8 @@ function LoginForm() {
           }
         }
       })
-      .catch((error) => console.error(error?.message));
+      .catch((error) => toast.error(error?.message))
+      .finally(() => setIsPending(false));
   };
 
   return (
@@ -114,9 +118,17 @@ function LoginForm() {
           <Button
             variant={"default"}
             type="submit"
-            className="w-full py-3 font-semibold text-white bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className="w-full"
+            disabled={isPending}
           >
-            Login
+            {isPending ? (
+              <div className="flex flex-row justify-center items-center gap-2">
+                <Loader2 className="animate-spin" />
+                Please wait
+              </div>
+            ) : (
+              "Log In"
+            )}
           </Button>
         </form>
       </Form>

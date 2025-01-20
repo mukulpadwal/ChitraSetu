@@ -61,7 +61,6 @@ export async function DELETE(
 ) {
   try {
     const { id } = await props.params;
-    console.log(id);
     const session = await auth();
 
     if (!session || session.user.role !== "admin") {

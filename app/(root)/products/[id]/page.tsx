@@ -47,8 +47,8 @@ const ProductPage = () => {
   }, [id, router]);
 
   const handleVariantChange = (type: string) => {
-    const selected = product?.variants.find(
-      (variant: ImageVariant) => variant.type === type
+    const selected = product?.variants?.find(
+      (variant: ImageVariant) => variant?.type === type
     );
     setSelectedVariant(selected);
   };

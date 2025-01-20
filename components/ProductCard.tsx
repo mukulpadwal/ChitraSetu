@@ -63,6 +63,7 @@ const ProductCard = ({ product }: { product: IProduct }) => {
       .then((data) => {
         if (data.success) {
           toast.success(data.message);
+          window.location.reload();
         } else {
           toast.error(data.message);
         }

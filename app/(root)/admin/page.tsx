@@ -4,12 +4,10 @@ import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { VerifiedIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 function AdminPage() {
   const { data: session, update, status } = useSession();
-  const router = useRouter();
 
   const handleChangeRole = async () => {
     await fetch("/api/auth/change-role", {
@@ -24,11 +22,13 @@ function AdminPage() {
         if (data.success) {
           update({ role: data.data.role });
           toast.success(data.message);
-          router.refresh();
         } else {
           toast.error(data.message);
         }
-      });
+      })
+      .catch(() =>
+        toast.error("Something went wrong while changing your role...")
+      )
   };
 
   return (
@@ -36,7 +36,7 @@ function AdminPage() {
       {status === "loading" ? (
         <Loader />
       ) : (
-        <div className="w-full max-w-2xl mx-auto p-6 space-y-6 bg-white rounded-lg shadow-lg">
+        <div className="w-full max-w-2xl mx-auto p-6">
           <h2 className="w-full text-lg font-bold text-center mb-2 text-gray-800">
             Welcome, <span>{session?.user.email}</span>
           </h2>

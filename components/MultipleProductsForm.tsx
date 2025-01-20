@@ -90,25 +90,27 @@ function MultipleProductsForm() {
       return;
     }
 
-    const variantsData = values.variants.map((variant) => {
-      if (variant.image) {
-        return {
-          type: variant.type,
-          price: variant.price,
-          license: values.license,
-          imageUrl: variant?.image?.url,
-          downloadUrl: variant?.image?.url,
-          previewUrl: variant?.image?.thumbnailUrl,
-          fileId: variant?.image?.fileId,
-          dimensions: {
-            width: variant?.image?.width,
-            height: variant?.image?.height,
-          },
-        };
-      }
+    const variantsData = values.variants
+      .map((variant) => {
+        if (variant.image) {
+          return {
+            type: variant.type,
+            price: variant.price,
+            license: values.license,
+            imageUrl: variant?.image?.url,
+            downloadUrl: variant?.image?.url,
+            previewUrl: variant?.image?.thumbnailUrl,
+            fileId: variant?.image?.fileId,
+            dimensions: {
+              width: variant?.image?.width,
+              height: variant?.image?.height,
+            },
+          };
+        }
 
-      return null;
-    });
+        return null;
+      })
+      .filter((variant) => variant !== null);
 
     const productsData = {
       name: values.name,

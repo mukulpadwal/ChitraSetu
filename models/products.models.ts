@@ -32,7 +32,6 @@ const productSchema = new Schema<IProduct>(
       {
         type: Schema.Types.ObjectId,
         ref: "Variant",
-        required: true,
         index: true,
       },
     ],

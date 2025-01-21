@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -20,15 +19,18 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
-import { Camera } from "lucide-react";
+import { Camera, Loader2, Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { ImageVariant, IProduct } from "@/models/products.models";
+import mongoose from "mongoose";
+import { IKImage } from "imagekitio-next";
 
 const ProductPage = () => {
   const { id }: { id: string } = useParams();
   const [product, setProduct] = useState<IProduct>();
   const [selectedVariant, setSelectedVariant] = useState<ImageVariant>();
   const { data: session, status } = useSession();
+  const [isPending, setIsPending] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -51,6 +53,32 @@ const ProductPage = () => {
       (variant: ImageVariant) => variant?.type === type
     );
     setSelectedVariant(selected);
+  };
+
+  const handleDeleteProduct = async (
+    id: mongoose.Types.ObjectId | undefined
+  ) => {
+    setIsPending(true);
+    fetch(`/api/products/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(""),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          toast.success(data.message);
+          window.location.reload();
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch(() =>
+        toast.error("Something went wrong while deleting the product...")
+      )
+      .finally(() => setIsPending(false));
   };
 
   async function handlePayment() {
@@ -105,13 +133,14 @@ const ProductPage = () => {
           <Card className="min-h-screen flex flex-col md:flex-row justify-around items-center p-4">
             <CardContent className="md:w-6/12 p-4 flex items-center justify-center">
               {selectedVariant?.previewUrl?.trim() ? (
-                <Image
-                  src={selectedVariant?.previewUrl}
-                  alt={product?.name || "Product image"}
-                  width={selectedVariant.dimensions?.width || 500}
-                  height={selectedVariant.dimensions?.height || 500}
-                  className="object-cover rounded-md shadow-lg"
-                />
+                <div className="relative">
+                  <IKImage
+                    src={selectedVariant?.previewUrl}
+                    alt={product?.name as string}
+                    height={selectedVariant?.dimensions?.height || 500}
+                    width={selectedVariant?.dimensions?.width || 500}
+                  />
+                </div>
               ) : (
                 <div className="w-[225px] h-[225px] sm:w-[500px] sm:h-[500px] flex justify-center items-center bg-gray-200">
                   No Image Available
@@ -119,7 +148,7 @@ const ProductPage = () => {
               )}
             </CardContent>
 
-            <div className="md:w-6/12 p-4">
+            <div className="w-full md:w-6/12 p-4">
               <CardHeader>
                 <CardTitle>{product?.name as string}</CardTitle>
                 <CardDescription>{product?.description}</CardDescription>
@@ -146,7 +175,36 @@ const ProductPage = () => {
                   </SelectContent>
                 </Select>
 
-                {/* Buy Now Button */}
+                {product?.owner === session?.user.id && (
+                  <div className="w-full flex flex-row justify-center items-center gap-2">
+                    <Button
+                      className="w-full flex flex-row items-center justify-center"
+                      variant="outline"
+                      onClick={() =>
+                        router.push(`/products/edit/${product?._id}`)
+                      }
+                    >
+                      <Pencil /> Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="w-full flex flex-row items-center justify-center"
+                      onClick={() => handleDeleteProduct(product?._id)}
+                      disabled={isPending}
+                    >
+                      {isPending ? (
+                        <>
+                          <Loader2 className="animate-spin" /> Deleting
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 /> Delete
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
                 <Button
                   className="w-full"
                   variant="default"

@@ -16,7 +16,6 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { ImageVariant, IProduct } from "@/models/products.models";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -24,6 +23,7 @@ import Loader from "./Loader";
 import { Eye, Loader2, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import mongoose from "mongoose";
+import { IKImage } from "imagekitio-next";
 import toast from "react-hot-toast";
 
 const ProductCard = ({ product }: { product: IProduct }) => {
@@ -41,11 +41,6 @@ const ProductCard = ({ product }: { product: IProduct }) => {
     if (selectedVariant) {
       setSelectedVariant(selectedVariant);
     }
-  };
-
-  const handleEditProduct = async (id: mongoose.Types.ObjectId | undefined) => {
-    router.push(`/products/edit/${id}`);
-    // TODO
   };
 
   const handleDeleteProduct = async (
@@ -87,13 +82,15 @@ const ProductCard = ({ product }: { product: IProduct }) => {
 
       <CardContent className="w-full flex justify-center items-center">
         {selectedVariant?.previewUrl?.trim()?.length > 0 ? (
-          <Image
-            src={selectedVariant?.previewUrl}
-            alt={product?.name}
-            width={selectedVariant.dimensions?.width || 200}
-            height={selectedVariant.dimensions?.height || 200}
-            className="object-cover rounded-md"
-          />
+          <div className="relative">
+            <IKImage
+              src={selectedVariant?.previewUrl}
+              lqip={{ active: true, quality: 20 }}
+              height={selectedVariant.dimensions?.height || 400}
+              width={selectedVariant.dimensions?.width || 400}
+              alt={product?.name}
+            />
+          </div>
         ) : (
           <div className="w-[200px] h-[200px] flex justify-center items-center bg-gray-200">
             No Image Available
@@ -122,12 +119,12 @@ const ProductCard = ({ product }: { product: IProduct }) => {
           </SelectContent>
         </Select>
 
-        {product.owner === session?.user.id ? (
+        {product.owner === session?.user.id && (
           <div className="w-full flex flex-row justify-center items-center gap-2">
             <Button
               className="w-full flex flex-row items-center justify-center"
-              variant="default"
-              onClick={() => handleEditProduct(product?._id)}
+              variant="outline"
+              onClick={() => router.push(`/products/edit/${product?._id}`)}
             >
               <Pencil /> Edit
             </Button>
@@ -135,6 +132,7 @@ const ProductCard = ({ product }: { product: IProduct }) => {
               variant="destructive"
               className="w-full flex flex-row items-center justify-center"
               onClick={() => handleDeleteProduct(product?._id)}
+              disabled={isPending}
             >
               {isPending ? (
                 <>
@@ -147,15 +145,14 @@ const ProductCard = ({ product }: { product: IProduct }) => {
               )}
             </Button>
           </div>
-        ) : (
-          <Button
-            variant="default"
-            className="w-full flex flex-row items-center justify-center"
-            onClick={() => router.push(`/products/${product._id}`)}
-          >
-            <Eye /> View Full Details
-          </Button>
         )}
+        <Button
+          variant="default"
+          className="w-full flex flex-row items-center justify-center"
+          onClick={() => router.push(`/products/${product._id}`)}
+        >
+          <Eye /> View Full Details
+        </Button>
       </CardFooter>
     </Card>
   );

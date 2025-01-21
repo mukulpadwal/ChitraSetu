@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
       receipt: `recept-${Date.now()}`,
       notes: {
         productId: productId.toString(),
-        license: variant.license.toString(),
       },
     });
 

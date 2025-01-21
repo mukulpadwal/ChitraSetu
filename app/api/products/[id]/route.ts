@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import ApiResponse from "@/lib/api-response";
 import { auth } from "@/auth";
 import imagekit from "@/lib/imagekit";
-import { ImageVariant } from "@/models/products.models";
+import { IVariant, Variant } from "@/models/variants.model";
 
 export async function GET(
   request: NextRequest,
@@ -22,9 +22,12 @@ export async function GET(
       });
     }
 
-    const product = await Product.findById(id).select(
-      "-variants.downloadUrl -createdAt -updatedAt -__v"
-    );
+    const product = await Product.findById(id).populate({
+      path: "variants",
+      options: {
+        strictPopulate: false,
+      },
+    });
 
     if (!product) {
       return NextResponse.json(
@@ -78,7 +81,12 @@ export async function DELETE(
 
     await connectToDB();
 
-    const product = await Product.findByIdAndDelete(id);
+    const product = await Product.findByIdAndDelete(id).populate({
+      path: "variants",
+      options: {
+        strictPopulate: false,
+      },
+    });
 
     if (!product) {
       return NextResponse.json(
@@ -89,11 +97,13 @@ export async function DELETE(
       );
     }
 
+    const variants = product.variants as IVariant[];
+
     const fileIds: string[] = [];
 
-    product.variants.forEach((variant: ImageVariant) =>
-      fileIds.push(variant.fileId)
-    );
+    variants.forEach((variant: IVariant) => fileIds.push(variant.fileId));
+
+    await Variant.deleteMany({ _id: { $in: variants.map((v) => v._id) } });
 
     await imagekit.bulkDeleteFiles(fileIds);
 

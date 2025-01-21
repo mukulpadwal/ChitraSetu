@@ -33,7 +33,7 @@ function OrderSuccessPage() {
       {!order ? (
         <Loader />
       ) : (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="min-h-screen">
           <Invoice order={order} />
         </div>
       )}

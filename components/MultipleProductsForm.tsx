@@ -96,7 +96,6 @@ function MultipleProductsForm() {
           return {
             type: variant.type,
             price: variant.price,
-            license: values.license,
             imageUrl: variant?.image?.url,
             downloadUrl: variant?.image?.url,
             previewUrl: variant?.image?.thumbnailUrl,
@@ -115,6 +114,7 @@ function MultipleProductsForm() {
     const productsData = {
       name: values.name,
       description: values.description,
+      license: values.license,
       variants: variantsData,
     };
 

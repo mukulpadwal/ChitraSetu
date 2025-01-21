@@ -16,7 +16,7 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ImageVariant, IProduct } from "@/models/products.models";
+import { IProduct } from "@/models/products.models";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Loader from "./Loader";
@@ -25,18 +25,19 @@ import { useRouter } from "next/navigation";
 import mongoose from "mongoose";
 import { IKImage } from "imagekitio-next";
 import toast from "react-hot-toast";
+import { IVariant } from "@/models/variants.model";
 
 const ProductCard = ({ product }: { product: IProduct }) => {
   const { data: session, status } = useSession();
-  const [selectedVariant, setSelectedVariant] = useState<ImageVariant>(
-    product?.variants[0] || ({} as ImageVariant)
+  const [selectedVariant, setSelectedVariant] = useState<IVariant>(
+    product?.variants[0] || ({} as IVariant)
   );
   const router = useRouter();
   const [isPending, setIsPending] = useState<boolean>(false);
 
   const handleVariantChange = (value: string) => {
     const selectedVariant = product.variants.find(
-      (variant: ImageVariant) => variant.type === value
+      (variant: IVariant) => variant.type === value
     );
     if (selectedVariant) {
       setSelectedVariant(selectedVariant);
@@ -69,92 +70,93 @@ const ProductCard = ({ product }: { product: IProduct }) => {
       .finally(() => setIsPending(false));
   };
 
-  if (status === "loading") {
-    return <Loader />;
-  }
-
   return (
-    <Card className="max-w-xs mx-auto">
-      <CardHeader>
-        <CardTitle>{product.name}</CardTitle>
-        <CardDescription>{product.description}</CardDescription>
-      </CardHeader>
+    <>
+      {status === "loading" ? (
+        <Loader />
+      ) : (
+        <Card className="max-w-xs mx-auto">
+          <CardHeader>
+            <CardTitle>{product.name}</CardTitle>
+            <CardDescription>{product.description}</CardDescription>
+          </CardHeader>
 
-      <CardContent className="w-full flex justify-center items-center">
-        {selectedVariant?.previewUrl?.trim()?.length > 0 ? (
-          <div className="relative">
-            <IKImage
-              src={selectedVariant?.previewUrl}
-              lqip={{ active: true, quality: 20 }}
-              height={selectedVariant.dimensions?.height || 400}
-              width={selectedVariant.dimensions?.width || 400}
-              alt={product?.name}
-            />
-          </div>
-        ) : (
-          <div className="w-[200px] h-[200px] flex justify-center items-center bg-gray-200">
-            No Image Available
-          </div>
-        )}
-      </CardContent>
+          <CardContent className="w-full flex justify-center items-center">
+            {selectedVariant?.imageUrl?.trim()?.length > 0 ? (
+              <div className="relative">
+                <IKImage
+                  src={selectedVariant?.imageUrl}
+                  height={selectedVariant.dimensions?.height || 400}
+                  width={selectedVariant.dimensions?.width || 400}
+                  alt={product?.name}
+                />
+              </div>
+            ) : (
+              <div className="w-[200px] h-[200px] flex justify-center items-center bg-gray-200">
+                No Image Available
+              </div>
+            )}
+          </CardContent>
 
-      <CardFooter className="flex flex-col gap-2">
-        <Select
-          onValueChange={(value: string) => handleVariantChange(value)}
-          value={selectedVariant?.type}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select Variant" />
-          </SelectTrigger>
-
-          <SelectContent>
-            {product.variants.map((variant: ImageVariant) => (
-              <SelectItem
-                key={`${variant._id}-${variant.type}`}
-                value={variant.type}
-              >
-                {`${variant?.label || variant.type} - Rs ${variant.price} /-`}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {product.owner === session?.user.id && (
-          <div className="w-full flex flex-row justify-center items-center gap-2">
-            <Button
-              className="w-full flex flex-row items-center justify-center"
-              variant="outline"
-              onClick={() => router.push(`/products/edit/${product?._id}`)}
+          <CardFooter className="flex flex-col gap-2">
+            <Select
+              onValueChange={(value: string) => handleVariantChange(value)}
+              value={selectedVariant?.type}
             >
-              <Pencil /> Edit
-            </Button>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Variant" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {product.variants.map((variant: IVariant) => (
+                  <SelectItem
+                    key={`${variant._id}-${variant.type}`}
+                    value={variant.type}
+                  >
+                    {`${variant?.label || variant.type} - Rs ${variant.price} /-`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {product.owner === session?.user.id && (
+              <div className="w-full flex flex-row justify-center items-center gap-2">
+                <Button
+                  className="w-full flex flex-row items-center justify-center"
+                  variant="outline"
+                  onClick={() => router.push(`/products/edit/${product?._id}`)}
+                >
+                  <Pencil /> Edit
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="w-full flex flex-row items-center justify-center"
+                  onClick={() => handleDeleteProduct(product?._id)}
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="animate-spin" /> Deleting
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 /> Delete
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
             <Button
-              variant="destructive"
+              variant="default"
               className="w-full flex flex-row items-center justify-center"
-              onClick={() => handleDeleteProduct(product?._id)}
-              disabled={isPending}
+              onClick={() => router.push(`/products/${product._id}`)}
             >
-              {isPending ? (
-                <>
-                  <Loader2 className="animate-spin" /> Deleting
-                </>
-              ) : (
-                <>
-                  <Trash2 /> Delete
-                </>
-              )}
+              <Eye /> View Full Details
             </Button>
-          </div>
-        )}
-        <Button
-          variant="default"
-          className="w-full flex flex-row items-center justify-center"
-          onClick={() => router.push(`/products/${product._id}`)}
-        >
-          <Eye /> View Full Details
-        </Button>
-      </CardFooter>
-    </Card>
+          </CardFooter>
+        </Card>
+      )}
+    </>
   );
 };
 

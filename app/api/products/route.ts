@@ -9,7 +9,12 @@ export async function GET() {
   try {
     await connectToDB();
 
-    const products: IProduct[] = await Product.find({});
+    const products: IProduct[] = await Product.find({}).populate({
+      path: "variants",
+      options: {
+        strictPopulate: false,
+      },
+    });
 
     if (!products || products.length === 0) {
       return NextResponse.json(new ApiResponse("No products found...", 404), {

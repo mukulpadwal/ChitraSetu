@@ -21,16 +21,18 @@ import {
 import { useSession } from "next-auth/react";
 import { Camera, Loader2, Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { ImageVariant, IProduct } from "@/models/products.models";
+import { IProduct } from "@/models/products.models";
 import mongoose from "mongoose";
 import { IKImage } from "imagekitio-next";
+import { IVariant } from "@/models/variants.model";
 
 const ProductPage = () => {
   const { id }: { id: string } = useParams();
   const [product, setProduct] = useState<IProduct>();
-  const [selectedVariant, setSelectedVariant] = useState<ImageVariant>();
+  const [selectedVariant, setSelectedVariant] = useState<IVariant>();
   const { data: session, status } = useSession();
   const [isPending, setIsPending] = useState<boolean>(false);
+  const [isPaymentPending, setIsPaymentPending] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const ProductPage = () => {
 
   const handleVariantChange = (type: string) => {
     const selected = product?.variants?.find(
-      (variant: ImageVariant) => variant?.type === type
+      (variant: IVariant) => variant?.type === type
     );
     setSelectedVariant(selected);
   };
@@ -82,6 +84,7 @@ const ProductPage = () => {
   };
 
   async function handlePayment() {
+    setIsPaymentPending(true);
     fetch("/api/orders/place", {
       method: "POST",
       headers: {
@@ -117,7 +120,11 @@ const ProductPage = () => {
         } else {
           toast.error(data.message);
         }
-      });
+      })
+      .catch(() =>
+        toast.error("Something went wrong while placing the order...")
+      )
+      .finally(() => setIsPaymentPending(false));
   }
 
   return (
@@ -164,7 +171,7 @@ const ProductPage = () => {
                     <SelectValue placeholder="Select Variant" />
                   </SelectTrigger>
                   <SelectContent>
-                    {product?.variants.map((variant: ImageVariant) => (
+                    {product?.variants.map((variant: IVariant) => (
                       <SelectItem
                         key={`${variant._id}-${variant.type}`}
                         value={variant.type}
@@ -209,11 +216,20 @@ const ProductPage = () => {
                   className="w-full"
                   variant="default"
                   onClick={handlePayment}
+                  disabled={isPaymentPending}
                 >
-                  Buy Now -{" "}
-                  {selectedVariant?.price
-                    ? `Rs ${selectedVariant.price}/-`
-                    : "N/A"}
+                  {isPaymentPending ? (
+                    <div className="flex flex-row items-center justify-center gap-2">
+                      <Loader2 className="animate-spin" /> Processing...
+                    </div>
+                  ) : (
+                    <>
+                      Buy Now -
+                      {selectedVariant?.price
+                        ? `Rs ${selectedVariant.price}/-`
+                        : "N/A"}
+                    </>
+                  )}
                 </Button>
               </CardFooter>
             </div>

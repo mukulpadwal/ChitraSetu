@@ -89,7 +89,6 @@ function SingleProductForm() {
         {
           type: values.variant,
           price: values.price,
-          license: values.license,
           imageUrl: values?.image?.url,
           downloadUrl: values?.image?.url,
           previewUrl: values?.image?.thumbnailUrl,
@@ -100,6 +99,7 @@ function SingleProductForm() {
           },
         },
       ],
+      license: values.license,
     };
 
     setIsPending(true);

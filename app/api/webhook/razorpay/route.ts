@@ -43,11 +43,15 @@ export async function POST(request: NextRequest) {
       ).populate([
         {
           path: "product",
-          select: "name description",
+          select: "name description label",
         },
         {
           path: "placedBy",
           select: "email",
+        },
+        {
+          path: "variant",
+          select: "imageUrl previewUrl",
         },
       ]);
 

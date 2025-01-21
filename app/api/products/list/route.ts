@@ -1,7 +1,9 @@
+/* eslint-disable prefer-const */
 import { auth } from "@/auth";
 import ApiResponse from "@/lib/api-response";
 import { connectToDB } from "@/lib/db";
 import { Product } from "@/models";
+import { IVariant, Variant } from "@/models/variants.model";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -16,10 +18,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the data from the client
-    const { name, description, variants } = await request.json();
+    let { name, description, variants, license } = await request.json();
 
     // Validate the data
-    if ([name, description].some((field) => !field || field.trim() === "")) {
+    if (
+      [name, description, license].some(
+        (field) => !field || field.trim() === ""
+      )
+    ) {
       return NextResponse.json(
         new ApiResponse("Either name or description is missing", 400),
         { status: 400 }
@@ -35,11 +41,23 @@ export async function POST(request: NextRequest) {
 
     await connectToDB();
 
+    variants = variants.map((variant: IVariant) => {
+      if (variant) {
+        return {
+          ...variant,
+          owner: session.user.id,
+        };
+      }
+    });
+
+    const listedVariants = await Variant.insertMany(variants);
+
     const product = await Product.create({
       name,
       description,
-      variants,
+      variants: listedVariants,
       owner: session.user.id,
+      license,
     });
 
     if (!product) {

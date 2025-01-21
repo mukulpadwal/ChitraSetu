@@ -23,14 +23,20 @@ export async function GET(
       .populate([
         {
           path: "placedBy",
-          select: "email -_id",
+          select: "email",
           options: {
             strictPopulate: false,
           },
         },
         {
           path: "product",
-          select: "name description -_id",
+          select: "name description license -_id",
+          options: {
+            strictPopulate: false,
+          },
+        },
+        {
+          path: "variant",
           options: {
             strictPopulate: false,
           },

@@ -18,14 +18,23 @@ export async function GET() {
     await connectToDB();
 
     const orders = await Order.find({ placedBy: session.user.id })
-      .populate({
-        path: "product",
-        select: "name description",
-        options: {
-          strictPopulate: false,
+      .populate([
+        {
+          path: "product",
+          select: "name description license",
+          options: {
+            strictPopulate: false,
+          },
         },
-      })
-      .sort({ createdAt: -1 }).select("-razorpayOrderId");
+        {
+          path: "variant",
+          options: {
+            strictPopulate: false,
+          },
+        },
+      ])
+      .sort({ createdAt: -1 })
+      .select("-razorpayOrderId");
 
     return NextResponse.json(
       new ApiResponse("User orders fetched successfully...", 200, orders),

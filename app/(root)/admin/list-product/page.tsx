@@ -6,7 +6,7 @@ import MultipleProductsForm from "@/components/MultipleProductsForm";
 
 function ListProductPage() {
   return (
-    <div className="max-w-5xl min-h-screen mx-auto p-4 space-y-6 border rounded-lg shadow-md">
+    <div className="max-w-5xl min-h-screen mx-auto p-4 space-y-6 border rounded-lg shadow-md m-6">
       <h1 className="text-2xl font-bold text-center">List a New Product</h1>
       <Tabs defaultValue="single" className="w-full">
         <TabsList className="w-full">

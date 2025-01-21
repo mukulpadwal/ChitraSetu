@@ -17,7 +17,14 @@ export async function GET() {
 
     await connectToDB();
 
-    const products = await Product.find({ owner: session.user.id }).lean();
+    const products = await Product.find({ owner: session.user.id })
+      .populate({
+        path: "variants",
+        options: {
+          strictPopulate: false,
+        },
+      })
+      .lean();
 
     if (products.length === 0 || !products) {
       return NextResponse.json(new ApiResponse("No Products listed...", 404), {

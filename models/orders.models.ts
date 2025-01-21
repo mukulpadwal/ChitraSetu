@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { ImageVariant } from "./products.models";
+import { IVariant } from "./variants.model";
 
 export interface PopulatedUser {
   _id: mongoose.Types.ObjectId;
@@ -10,13 +10,15 @@ export interface PopulatedProduct {
   _id: mongoose.Types.ObjectId;
   name: string;
   description: string;
+  license: "personal" | "commercial";
+  variants: IVariant[];
 }
 
 export interface IOrder {
   _id?: mongoose.Types.ObjectId;
   placedBy: mongoose.Types.ObjectId | PopulatedUser;
   product: mongoose.Types.ObjectId | PopulatedProduct;
-  variant: ImageVariant;
+  variant: IVariant;
   razorpayOrderId: string;
   razorpayPaymentId?: string;
   amount: number;
@@ -40,28 +42,10 @@ const orderSchema = new Schema<IOrder>(
       index: true,
     },
     variant: {
-      type: {
-        type: String,
-        required: true,
-        enum: ["SQUARE", "WIDE", "PORTRAIT"],
-      },
-      price: {
-        type: Number,
-        required: true,
-        min: 0,
-      },
-      license: {
-        type: String,
-        required: true,
-        enum: ["personal", "commercial"],
-      },
-      downloadUrl: { type: String },
-      previewUrl: { type: String },
-      fileId: { type: String },
-      imageUrl: {
-        type: String,
-        required: true,
-      },
+      type: Schema.Types.ObjectId,
+      ref: "Variant",
+      required: true,
+      index: true,
     },
     razorpayOrderId: { type: String, required: true },
     razorpayPaymentId: { type: String },

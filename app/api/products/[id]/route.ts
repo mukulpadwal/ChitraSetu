@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import ApiResponse from "@/lib/api-response";
 import { auth } from "@/auth";
 import imagekit from "@/lib/imagekit";
-import { IVariant, Variant } from "@/models/variants.model";
+import { IVariant, Variant } from "@/models/variants.models";
 
 export async function GET(
   request: NextRequest,

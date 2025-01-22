@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import ApiResponse from "@/lib/api-response";
 import { connectToDB } from "@/lib/db";
 import { Product } from "@/models";
-import { IVariant, Variant } from "@/models/variants.model";
+import { IVariant, Variant } from "@/models/variants.models";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {

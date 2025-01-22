@@ -25,19 +25,19 @@ import { useRouter } from "next/navigation";
 import mongoose from "mongoose";
 import { IKImage } from "imagekitio-next";
 import toast from "react-hot-toast";
-import { IVariant } from "@/models/variants.model";
+import { IVariant } from "@/models/variants.models";
 
 const ProductCard = ({ product }: { product: IProduct }) => {
   const { data: session, status } = useSession();
   const [selectedVariant, setSelectedVariant] = useState<IVariant>(
-    product?.variants[0] || ({} as IVariant)
+    product?.variants[0] as IVariant
   );
   const router = useRouter();
   const [isPending, setIsPending] = useState<boolean>(false);
 
   const handleVariantChange = (value: string) => {
     const selectedVariant = product.variants.find(
-      (variant: IVariant) => variant.type === value
+      (variant): variant is IVariant => (variant as IVariant).type === value
     );
     if (selectedVariant) {
       setSelectedVariant(selectedVariant);
@@ -108,12 +108,12 @@ const ProductCard = ({ product }: { product: IProduct }) => {
               </SelectTrigger>
 
               <SelectContent>
-                {product.variants.map((variant: IVariant) => (
+                {product.variants.map((variant) => (
                   <SelectItem
-                    key={`${variant._id}-${variant.type}`}
-                    value={variant.type}
+                    key={`${variant._id}-${(variant as IVariant).type}`}
+                    value={(variant as IVariant).type}
                   >
-                    {`${variant?.label || variant.type} - Rs ${variant.price} /-`}
+                    {`${(variant as IVariant)?.label || (variant as IVariant).type} - Rs ${(variant as IVariant).price} /-`}
                   </SelectItem>
                 ))}
               </SelectContent>

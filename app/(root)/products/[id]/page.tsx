@@ -24,7 +24,7 @@ import toast from "react-hot-toast";
 import { IProduct } from "@/models/products.models";
 import mongoose from "mongoose";
 import { IKImage } from "imagekitio-next";
-import { IVariant } from "@/models/variants.model";
+import { IVariant } from "@/models/variants.models";
 
 const ProductPage = () => {
   const { id }: { id: string } = useParams();
@@ -52,7 +52,7 @@ const ProductPage = () => {
 
   const handleVariantChange = (type: string) => {
     const selected = product?.variants?.find(
-      (variant: IVariant) => variant?.type === type
+      (variant): variant is IVariant => (variant as IVariant)?.type === type
     );
     setSelectedVariant(selected);
   };
@@ -171,12 +171,12 @@ const ProductPage = () => {
                     <SelectValue placeholder="Select Variant" />
                   </SelectTrigger>
                   <SelectContent>
-                    {product?.variants.map((variant: IVariant) => (
+                    {product?.variants?.map((variant) => (
                       <SelectItem
-                        key={`${variant._id}-${variant.type}`}
-                        value={variant.type}
+                        key={`${variant._id}-${(variant as IVariant)?.type}`}
+                        value={(variant as IVariant)?.type}
                       >
-                        {`${variant.type} - Rs ${variant.price}/-`}
+                        {`${(variant as IVariant)?.type} - Rs ${(variant as IVariant)?.price}/-`}
                       </SelectItem>
                     ))}
                   </SelectContent>

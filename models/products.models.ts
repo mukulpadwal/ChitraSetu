@@ -1,12 +1,12 @@
 import mongoose, { Schema } from "mongoose";
-import { IVariant } from "./variants.model";
+import { IVariant } from "./variants.models";
 
 export interface IProduct {
   _id?: mongoose.Types.ObjectId;
   name: string;
   description: string;
   owner: mongoose.Types.ObjectId;
-  variants: IVariant[];
+  variants: mongoose.Types.ObjectId[] | IVariant[];
   license: "personal" | "commercial";
   createdAt?: Date;
   updatedAt?: Date;

@@ -35,19 +35,21 @@ export type ImageVariantLabelType =
   (typeof IMAGE_VARIANTS)[keyof typeof IMAGE_VARIANTS]["label"];
 
 export interface IVariant {
+  _id?: mongoose.Types.ObjectId;
   owner: mongoose.Types.ObjectId;
   type: ImageVariantType;
   price: number;
   dimensions?: {
-    width?: number;
-    height?: number;
+    width: number;
+    height: number;
   };
-  label?: ImageVariantLabelType;
+  label: ImageVariantLabelType;
   imageUrl: string;
   downloadUrl: string;
   previewUrl: string;
   fileId: string;
-  _id?: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const variantSchema = new Schema<IVariant>({

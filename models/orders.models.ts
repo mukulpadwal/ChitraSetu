@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IVariant } from "./variants.model";
+import { IVariant } from "./variants.models";
 
 export interface PopulatedUser {
   _id: mongoose.Types.ObjectId;

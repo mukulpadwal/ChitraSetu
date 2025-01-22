@@ -58,6 +58,96 @@ export async function GET(
   }
 }
 
+export async function PUT(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await props.params;
+    const session = await auth();
+
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json(
+        new ApiResponse("Unauthorized Request...", 400),
+        { status: 400 }
+      );
+    }
+
+    if (id === undefined || !id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(new ApiResponse("Invalid product id..", 400), {
+        status: 400,
+      });
+    }
+
+    const { name, description, variants, license } = await request.json();
+
+    await connectToDB();
+
+    variants.forEach(async (variant: IVariant) => {
+      await Variant.findByIdAndUpdate(variant._id, {
+        $set: {
+          type: variant.type,
+          price: variant.price,
+          fileId: variant.fileId,
+          imageUrl: variant.imageUrl,
+          downloadUrl: variant.downloadUrl,
+          previewUrl: variant.previewUrl,
+          dimensions: {
+            width: variant.dimensions?.width,
+            height: variant?.dimensions?.height,
+          },
+        },
+      });
+    });
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name,
+          description,
+          license,
+        },
+      },
+      {
+        new: true,
+      }
+    ).populate({
+      path: "variants",
+      options: {
+        strictPopulate: false,
+      },
+    });
+
+    if (!updatedProduct) {
+      return NextResponse.json(
+        new ApiResponse("No product with id found...", 404),
+        {
+          status: 404,
+        }
+      );
+    }
+
+    return NextResponse.json(
+      new ApiResponse("Product updated successfully...", 200, updatedProduct),
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error("Something went wrong while updating the product ", error);
+    return NextResponse.json(
+      new ApiResponse(
+        "Internal server error while updating your product...",
+        500
+      ),
+      {
+        status: 500,
+      }
+    );
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   props: { params: Promise<{ id: string }> }

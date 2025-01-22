@@ -81,7 +81,7 @@ const Invoice = ({ order }: { order: IOrder }) => {
                     ? "red"
                     : status === "refunded"
                       ? "purple"
-                      : "yellow",
+                      : "gray",
             }}
             className="text-base sm:text-lg"
           >

@@ -33,6 +33,7 @@ export async function GET() {
                 name: 1,
                 description: 1,
                 owner: 1,
+                license: 1,
               },
             },
           ],
@@ -54,12 +55,23 @@ export async function GET() {
         },
       },
       {
+        $lookup: {
+          from: "variants",
+          localField: "variant",
+          foreignField: "_id",
+          as: "variantDetails",
+        },
+      },
+      {
         $addFields: {
           productDetails: {
             $arrayElemAt: ["$productDetails", 0],
           },
           buyerDetails: {
             $arrayElemAt: ["$buyerDetails", 0],
+          },
+          variantDetails: {
+            $arrayElemAt: ["$variantDetails", 0],
           },
         },
       },

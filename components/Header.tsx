@@ -106,7 +106,7 @@ function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="absolute top-20 left-0 w-full bg-white shadow-md border-t border-gray-200 flex flex-col gap-4 p-4">
+          <div className="absolute top-20 left-0 w-full bg-white shadow-md border-t border-gray-200 flex flex-col gap-4 p-4 z-50">
             {session ? (
               <div className="flex flex-col gap-2">
                 {/* Simple Links for Admin, Orders, Profile on Mobile */}

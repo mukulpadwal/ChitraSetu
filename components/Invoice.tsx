@@ -28,7 +28,6 @@ const Invoice = ({ order }: { order: IOrder }) => {
   const { email } = (order?.placedBy as PopulatedUser) || {};
   const { name, description, license } =
     (order?.product as PopulatedProduct) || {};
-  console.log(license);
 
   return (
     <>

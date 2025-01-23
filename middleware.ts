@@ -15,6 +15,7 @@ export default auth((req) => {
 
   const isProductPage = pathname.startsWith("/products/");
   const isAdminPage = pathname.startsWith("/admin/");
+  const isProfilePage = pathname.startsWith("/profile/");
 
   // Redirect authenticated users away from public routes
   if (session && publicRoutes.includes(pathname)) {
@@ -25,7 +26,10 @@ export default auth((req) => {
   // Redirect unauthenticated users away from protected routes, including product pages
   if (
     !session &&
-    (protectedRoutes.includes(pathname) || isProductPage || isAdminPage)
+    (protectedRoutes.includes(pathname) ||
+      isProductPage ||
+      isAdminPage ||
+      isProfilePage)
   ) {
     const newUrl = new URL("/login", req.nextUrl.origin); // Redirect to /login if not logged in
     return NextResponse.redirect(newUrl);

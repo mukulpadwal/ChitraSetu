@@ -16,7 +16,9 @@ export async function DELETE() {
       );
     }
 
-    const user = await User.findByIdAndDelete(session.user.id);
+    const user = await User.findByIdAndDelete(session.user.id).select(
+      "-password"
+    );
 
     if (!user) {
       return NextResponse.json(
@@ -28,13 +30,13 @@ export async function DELETE() {
     }
 
     return NextResponse.json(
-      new ApiResponse("Successfully deleted your account...", 200),
+      new ApiResponse("Successfully deleted your account...", 200, user),
       {
         status: 200,
       }
     );
   } catch (error) {
-    console.error("Something went wrong while deleting user account ", error);
+    console.error("Internal server error :: DELETE USER :: ", error);
     return NextResponse.json(
       new ApiResponse(
         "Internal server error while deleting your account...",

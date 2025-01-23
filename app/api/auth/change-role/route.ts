@@ -47,7 +47,7 @@ export async function PATCH(request: NextRequest) {
       }
     );
   } catch (error) {
-    console.error("Something went wrong while changing user role ", error);
+    console.error("Internal Server Error :: CHANGE ROLE :: ", error);
     return NextResponse.json(
       new ApiResponse("Internal Server error while changing your role...", 500),
       { status: 500 }

@@ -82,10 +82,10 @@ const ProductCard = ({ product }: { product: IProduct }) => {
           </CardHeader>
 
           <CardContent className="w-full flex justify-center items-center">
-            {selectedVariant?.imageUrl?.trim()?.length > 0 ? (
+            {selectedVariant?.previewUrl?.trim()?.length > 0 ? (
               <div className="relative">
                 <IKImage
-                  src={selectedVariant?.imageUrl}
+                  src={selectedVariant?.previewUrl}
                   height={selectedVariant.dimensions?.height || 400}
                   width={selectedVariant.dimensions?.width || 400}
                   alt={product?.name}

@@ -24,6 +24,7 @@ export async function GET(
 
     const product = await Product.findById(id).populate({
       path: "variants",
+      select: "-owner -downloadUrl -imageUrl -fileId",
       options: {
         strictPopulate: false,
       },
@@ -97,7 +98,7 @@ export async function PUT(
             height: variant?.dimensions?.height,
           },
         },
-      });
+      }).select("-owner -downloadUrl -imageUrl -fileId");
     });
 
     const updatedProduct = await Product.findByIdAndUpdate(

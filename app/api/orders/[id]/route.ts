@@ -30,7 +30,7 @@ export async function GET(
         },
         {
           path: "product",
-          select: "name description license -_id",
+          select: "name description license",
           options: {
             strictPopulate: false,
           },

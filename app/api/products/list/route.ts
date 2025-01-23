@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     const listedVariants = await Variant.insertMany(variants);
 
-    const product = await Product.create({
+    let product = await Product.create({
       name,
       description,
       variants: listedVariants,
@@ -69,6 +69,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    product = await Product.findById(product._id).populate({
+      path: "variants",
+      select: "-owner -downloadUrl -imageUrl -fileId",
+      options: {
+        strictPopulate: false,
+      },
+    });
 
     return NextResponse.json(
       new ApiResponse("Product listed successfully...", 201, product),

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     await connectToDB();
 
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
 
     if (!user) {
       return NextResponse.json(
@@ -43,6 +43,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    user = await User.findById(user._id).select("-password");
+
     return NextResponse.json(
       new ApiResponse("User logged in successfully", 200, user),
       {
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
       }
     );
   } catch (error) {
-    console.error("Something went wrong while login the user ", error);
+    console.error("Internal Server Error :: LOGIN USER :: ", error);
     return NextResponse.json(new ApiResponse("", 500), {
       status: 500,
     });

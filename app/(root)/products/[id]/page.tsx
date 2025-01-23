@@ -135,7 +135,7 @@ const ProductPage = () => {
           Loading...
         </div>
       ) : (
-        <div className="md:max-w-7xl min-h-screen mx-auto p-4">
+        <div className="md:max-w-7xl min-h-screen mx-auto sm:p-4">
           {/* Product Information */}
           <Card className="min-h-screen flex flex-col md:flex-row justify-around items-center p-4">
             <CardContent className="md:w-6/12 p-4 flex items-center justify-center">
@@ -155,7 +155,7 @@ const ProductPage = () => {
               )}
             </CardContent>
 
-            <div className="w-full md:w-6/12 p-4">
+            <div className="w-full md:w-6/12 sm:p-4">
               <CardHeader>
                 <CardTitle>{product?.name as string}</CardTitle>
                 <CardDescription>{product?.description}</CardDescription>

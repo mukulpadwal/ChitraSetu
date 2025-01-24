@@ -66,7 +66,7 @@ function ProductEditPage() {
       name: "",
       description: "",
       variants: [],
-      license: "personal",
+      license: undefined,
     },
   });
 
@@ -77,27 +77,38 @@ function ProductEditPage() {
 
   const onSubmit = async (values: EditFormSchemaType) => {
     setIsPending(true);
-    const variantsData = values.variants
-      .map((variant) => {
-        if (variant.image) {
-          return {
-            _id: variant._id,
-            type: variant.type,
-            price: variant.price,
-            imageUrl: variant?.image?.url,
-            downloadUrl: variant?.image?.url,
-            previewUrl: variant?.image?.thumbnailUrl,
-            fileId: variant?.image?.fileId,
-            dimensions: {
-              width: variant?.image?.width,
-              height: variant?.image?.height,
-            },
-          };
-        }
+    const variantsData = values.variants.map((variant) => {
+      const transformedVariant: {
+        _id: string;
+        type: "SQUARE" | "WIDE" | "PORTRAIT";
+        price: number;
+        imageUrl?: string;
+        downloadUrl?: string;
+        previewUrl?: string;
+        fileId?: string;
+        dimensions?: {
+          width: number;
+          height: number;
+        };
+      } = {
+        _id: variant._id,
+        type: variant.type,
+        price: variant.price,
+      };
 
-        return null;
-      })
-      .filter((variant) => variant !== null);
+      if (variant.image) {
+        transformedVariant.imageUrl = variant.image.url;
+        transformedVariant.downloadUrl = variant.image.url;
+        transformedVariant.previewUrl = variant.image.thumbnailUrl;
+        transformedVariant.fileId = variant.image.fileId;
+        transformedVariant.dimensions = {
+          width: variant.image.width,
+          height: variant.image.height,
+        };
+      }
+
+      return transformedVariant;
+    });
 
     const productData = {
       name: values.name,
@@ -131,17 +142,17 @@ function ProductEditPage() {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
+          const { name, description, variants, license } = data.data;
+          form.setValue("name", name);
+          form.setValue("description", description);
+          form.setValue("variants", variants);
+          form.setValue("license", license);
           toast.success("Product data fetched successfully.");
-          form.setValue("name", data.data.name);
-          form.setValue("description", data.data.description);
-          form.setValue("variants", data.data.variants || []);
-          form.setValue("license", data.data.license || "");
         } else {
           toast.error(data.message);
         }
       })
-      .catch(() => toast.error("Failed to fetch product details."))
-      .finally(() => {});
+      .catch(() => toast.error("Failed to fetch product details."));
   }, [id, form]);
 
   return (
@@ -300,10 +311,7 @@ function ProductEditPage() {
                   <FormLabel className="font-bold text-lg">
                     Select License*
                   </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Choose a license type" />

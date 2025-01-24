@@ -1,1 +1,1 @@
-export const DB_NAME = "snap-trade"
+export const DB_NAME = "chitra-setu"

@@ -14,8 +14,8 @@ const sirinStencilSans = Sirin_Stencil({
 });
 
 export const metadata: Metadata = {
-  title: "SnapTrade",
-  description: "Where Every Click Counts.",
+  title: "ChitraSetu",
+  description: "Bridge the Gap Between Vision and Trade",
 };
 
 export default function RootLayout({

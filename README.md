@@ -1,13 +1,13 @@
-# SnapTrade
-Where Every Click Counts.
+# ChitraSetu  
+**Bridge the Gap Between Vision and Trade**
 
-![SnapTrade Logo](public/logo.png)
+![ChitraSetu Logo](public/logo.png)
 
-Welcome to SnapTrade! This project is designed to provide a seamless trading experience. Below you will find all the necessary information to get started with the project.
+Discover, showcase, and trade through stunning images. ChitraSetu connects buyers and sellers in an effortless, image-driven marketplace.
 
 ## Table of Contents
 
-- [SnapTrade](#snaptrade)
+- [ChitraSetu](#chitrasetu)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
@@ -17,28 +17,32 @@ Welcome to SnapTrade! This project is designed to provide a seamless trading exp
 
 ## Introduction
 
-SnapTrade is ultimate marketplace for photographers, creators, and visual enthusiasts. Buy stunning images or sell your creativity with ease and confidence.
+Welcome to **ChitraSetu**, the ultimate bridge between stunning visuals and seamless eCommerce. Our platform is designed to revolutionize the way you buy and sell by putting images at the heart of every interaction.
+
+Whether you're a seller showcasing your products or a buyer exploring vibrant collections, **ChitraSetu** makes the process simple, intuitive, and visually engaging. With our image-first approach, discover a marketplace where every picture tells a story and every trade becomes effortless.
+
+Experience a new way of connecting through commerce. With **ChitraSetu**, it’s not just about trade, it’s about seeing the possibilities.
 
 ## Features
 
-- User Authentication (Login/Signup)
-- Admin Dashboard
-- Product Listing and Management
-- Order Management
-- Success Page for Orders
+- **User Authentication:** Secure Login/Signup for buyers and sellers.
+- **Admin Dashboard:** Manage users, products, and orders.
+- **Product Listing & Management:** Add, update, and display products with images.
+- **Order Management:** Track and process orders efficiently.
+- **Success Page:** Visual order confirmation and success message after checkout.
 
 ## Installation
 
-To get started with SnapTrade, follow these steps:
+To get started with **ChitraSetu**, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/<yourusername>/snap-trade.git
+    git clone https://github.com/<yourusername>/chitrasetu.git
     ```
 
 2. Navigate to the project directory:
     ```bash
-    cd snap-trade
+    cd chitrasetu
     ```
 
 3. Install the dependencies:
@@ -53,13 +57,13 @@ To get started with SnapTrade, follow these steps:
 
 ## Usage
 
-Once the development server is running, you can access the application at `http://localhost:3000`. From here, you can explore the various features of SnapTrade, including user authentication, product management, and order processing.
+Once the development server is running, you can access the application at `http://localhost:3000`. From here, you can explore the various features of **ChitraSetu**, including user authentication, product management, and order processing.
 
 ## Contributing
 
-We welcome contributions to SnapTrade! If you would like to contribute, please follow these steps:
+We welcome contributions to **ChitraSetu**! If you would like to contribute, please follow these steps:
 
-1. Fork the repository.
+1. **Fork** the repository.
 2. Create a new branch:
     ```bash
     git checkout -b feature-branch
@@ -72,6 +76,7 @@ We welcome contributions to SnapTrade! If you would like to contribute, please f
     ```bash
     git push origin feature-branch
     ```
-5. Open a pull request.
+5. Open a **pull request**.
 
-Thank you for using SnapTrade! If you have any questions or feedback, please feel free to open an issue or contact us directly.
+Thank you for using **ChitraSetu**! If you have any questions or feedback, please feel free to open an issue or contact us directly.
+

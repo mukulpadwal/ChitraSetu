@@ -11,7 +11,7 @@ function Footer() {
 
       {/* Copyright Text */}
       <small className="text-sm font-light text-center text-gray-600">
-        &copy; {new Date().getFullYear()} | All Rights Reserved.
+        &copy; {new Date().getFullYear()} ChitraSetu | All Rights Reserved.
       </small>
     </footer>
   );

@@ -8,13 +8,22 @@ function AboutPage() {
       <div className="max-w-4xl w-full text-center space-y-6">
         <div className="flex justify-center items-center gap-2">
           <Aperture size={50} />
-          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800">About SnapTrade</h1>
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800">
+            About ChitraSetu
+          </h1>
         </div>
         <p className="text-lg text-gray-600 leading-relaxed">
-          SnapTrade is a marketplace designed for photographers, creators, and
-          visual enthusiasts. We bring together a community of professionals and
-          hobbyists, empowering them to share their creative work with the world
-          while earning fair value for their efforts.
+          Welcome to <strong>ChitraSetu</strong>, the ultimate bridge between
+          stunning visuals and seamless eCommerce. Our platform is designed to
+          revolutionize the way you buy and sell by putting images at the heart
+          of every interaction. Whether you&apos;re a seller showcasing your
+          products or a buyer exploring vibrant collections,{" "}
+          <strong>ChitraSetu</strong> makes the process simple, intuitive, and
+          visually engaging. With our image-first approach, discover a
+          marketplace where every picture tells a story and every trade becomes
+          effortless. Experience a new way of connecting through commerce. With{" "}
+          <strong>ChitraSetu</strong>, it’s not just about trade, it’s about
+          seeing the possibilities.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
@@ -63,10 +72,10 @@ function AboutPage() {
 
       <div className="mt-12 text-center">
         <h3 className="text-2xl font-bold text-gray-800">
-          Ready to Join SnapTrade?
+          Ready to Join ChitraSetu?
         </h3>
         <p className="text-gray-600 mt-2">
-          Whether you&apos;re a buyer or a creator, SnapTrade is here to help
+          Whether you&apos;re a buyer or a creator, ChitraSetu is here to help
           you make your mark.
         </p>
         <Link href={"/login"}>

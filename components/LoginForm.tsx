@@ -65,7 +65,7 @@ function LoginForm() {
     <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg space-y-6">
       <div className="flex flex-col items-center space-y-2">
         <Aperture size={50} className="text-gray-700" />
-        <h1 className="text-2xl font-bold text-gray-800">SnapTrade</h1>
+        <h1 className="text-2xl font-bold text-gray-800">ChitraSetu</h1>
         <p className="text-sm text-gray-600">
           Welcome back! Please log in to your account.
         </p>

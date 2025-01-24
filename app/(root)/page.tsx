@@ -10,15 +10,15 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col justify-center items-center gap-4">
-        <h1 className="text-5xl font-bold text-center">SnapTrade</h1>
+        <h1 className="text-5xl font-bold text-center">ChitraSetu</h1>
         <h2 className="text-3xl font-medium text-center">
-          Where Every Click Counts.
+          Bridge the Gap Between Vision and Trade.
         </h2>
 
         <p className="text-lg text-center text-muted-foreground max-w-xl">
-          Welcome to SnapTrade – the ultimate marketplace for photographers,
-          creators, and visual enthusiasts. Buy stunning images or sell your
-          creativity with ease and confidence.
+          Discover, showcase, and trade through stunning images. ChitraSetu
+          connects buyers and sellers in an effortless, image-driven
+          marketplace.
         </p>
 
         <div className="flex gap-4">

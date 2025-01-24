@@ -8,7 +8,7 @@ function Logo({ className = "", size }: { className?: string; size?: number }) {
       className={`${className} flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2`}
     >
       <Aperture size={size || 30} />
-      <span className="text-lg font-bold">SnapTrade</span>
+      <span className="text-lg font-bold">ChitraSetu</span>
     </Link>
   );
 }

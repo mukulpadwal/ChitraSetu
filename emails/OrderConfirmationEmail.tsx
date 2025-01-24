@@ -39,7 +39,7 @@ const OrderConfirmationEmail = ({
 }) => (
   <Html>
     <Head />
-    <Preview>SnapTrade Receipt</Preview>
+    <Preview>ChitraSetu Order Confirmation Receipt</Preview>
 
     <Body style={main}>
       <Container style={container}>
@@ -116,7 +116,7 @@ const OrderConfirmationEmail = ({
           </Row>
         </Section>
         <Section style={productTitleTable}>
-          <Text style={productsTitle}>SnapTrade Store</Text>
+          <Text style={productsTitle}>ChitraSetu Store</Text>
         </Section>
         <Section>
           <Row>
@@ -167,15 +167,7 @@ const OrderConfirmationEmail = ({
         <Section>
           <Row>
             <Column align="center" style={block}>
-              <Img
-                src={`${baseUrl}/_next/image?url=%2Flogo.png&w=128&q=75`}
-                width="100"
-                height="100"
-                alt="SnapTrade Logo"
-              />
-            </Column>
-            <Column align="center" style={block}>
-              &copy; {new Date().getFullYear()} | All Rights Reserved
+              &copy; {new Date().getFullYear()} ChitraSetu | All Rights Reserved
             </Column>
           </Row>
         </Section>

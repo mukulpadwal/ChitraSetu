@@ -79,7 +79,7 @@ function SignupForm() {
         <Aperture size={50} className="text-gray-700" />
         <h1 className="text-2xl font-bold text-gray-800">Create an Account</h1>
         <p className="text-sm text-gray-600">
-          Join SnapTrade and explore a world of creativity.
+          Join ChitraSetu and explore a world of creativity.
         </p>
       </div>
 

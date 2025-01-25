@@ -26,7 +26,7 @@ export async function sendConfirmationEmail({
 }) {
   try {
     const { data, error } = await resend.emails.send({
-      from: "team-snap-trade@mukulpadwal.me",
+      from: "team-chitra-setu@mukulpadwal.me",
       to: [email],
       subject: "Order Completed ✔",
       react: OrderConfirmationEmail({

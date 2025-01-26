@@ -3,7 +3,11 @@ import crypto from "crypto";
 import { connectToDB } from "@/lib/db";
 import { Order } from "@/models";
 import ApiResponse from "@/lib/api-response";
-import { sendConfirmationEmail } from "@/lib/resend";
+import {
+  sendConfirmationEmail,
+  sendFailureEmail,
+  sendRefundEmail,
+} from "@/lib/resend";
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,6 +70,92 @@ export async function POST(request: NextRequest) {
           description: order.product.description,
           amount: order.amount,
           downloadUrl: order.variant.imageUrl,
+        });
+      }
+    } else if (event?.event === "payment.failed") {
+      const payment = event.payload.payment.entity;
+
+      const order = await Order.findOneAndUpdate(
+        {
+          razorpayOrderId: payment?.order_id,
+        },
+        {
+          $set: {
+            razorpayPaymentId: payment?.id,
+            status: "failed",
+          },
+        },
+        {
+          new: true,
+        }
+      ).populate([
+        {
+          path: "product",
+          select: "name description label",
+        },
+        {
+          path: "placedBy",
+          select: "email",
+        },
+        {
+          path: "variant",
+          select: "imageUrl previewUrl",
+        },
+      ]);
+
+      if (order) {
+        await sendFailureEmail({
+          email: order.placedBy.email,
+          createdAt: order.createdAt,
+          razorpayPaymentId: order.razorpayPaymentId,
+          orderId: order._id.toString(),
+          previewUrl: order.variant.previewUrl,
+          name: order.product.name,
+          description: order.product.description,
+          amount: order.amount,
+        });
+      }
+    } else if (event?.event === "refund.created") {
+      const payment = event.payload.payment.entity;
+
+      const order = await Order.findOneAndUpdate(
+        {
+          razorpayOrderId: payment?.order_id,
+        },
+        {
+          $set: {
+            razorpayPaymentId: payment?.id,
+            status: "refunded",
+          },
+        },
+        {
+          new: true,
+        }
+      ).populate([
+        {
+          path: "product",
+          select: "name description label",
+        },
+        {
+          path: "placedBy",
+          select: "email",
+        },
+        {
+          path: "variant",
+          select: "imageUrl previewUrl",
+        },
+      ]);
+
+      if (order) {
+        await sendRefundEmail({
+          email: order.placedBy.email,
+          createdAt: order.createdAt,
+          razorpayPaymentId: order.razorpayPaymentId,
+          orderId: order._id.toString(),
+          previewUrl: order.variant.previewUrl,
+          name: order.product.name,
+          description: order.product.description,
+          amount: order.amount,
         });
       }
     }

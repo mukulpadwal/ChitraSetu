@@ -121,14 +121,16 @@ function LoginForm() {
             className="w-full flex flex-row justify-center items-center space-x-2"
             disabled={isPending}
           >
-            <LogIn />
             {isPending ? (
               <div className="flex flex-row justify-center items-center gap-2">
                 <Loader2 className="animate-spin" />
                 Please wait
               </div>
             ) : (
-              "Log In"
+              <div className="flex flex-row justify-center items-center gap-2">
+                <LogIn />
+                Log In
+              </div>
             )}
           </Button>
         </form>
@@ -150,7 +152,7 @@ function LoginForm() {
           variant="outline"
           onClick={() => {
             form.setValue("email", "testuser@test.com");
-            form.setValue("password", "TestUser*");
+            form.setValue("password", "TestUser1*");
           }}
         >
           <UserCheck /> Try as User

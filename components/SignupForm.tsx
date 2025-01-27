@@ -154,14 +154,15 @@ function SignupForm() {
             className="w-full flex flex-row justify-center items-center space-x-2"
             disabled={isPending}
           >
-            <UserRoundPlus />
             {isPending ? (
               <div className="flex flex-row items-center justify-center gap-2">
                 <Loader2 className="animate-spin" />
                 Creating account
               </div>
             ) : (
-              "Create Account"
+              <div className="flex flex-row justify-center items-center gap-2">
+                <UserRoundPlus /> Create Account
+              </div>
             )}
           </Button>
         </form>

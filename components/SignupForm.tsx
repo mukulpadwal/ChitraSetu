@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Aperture, Loader2 } from "lucide-react";
+import { Aperture, Loader2, UserRoundPlus } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -151,9 +151,10 @@ function SignupForm() {
           <Button
             variant={"default"}
             type="submit"
-            className="w-full"
+            className="w-full flex flex-row justify-center items-center space-x-2"
             disabled={isPending}
           >
+            <UserRoundPlus />
             {isPending ? (
               <div className="flex flex-row items-center justify-center gap-2">
                 <Loader2 className="animate-spin" />

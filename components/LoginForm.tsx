@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { Input } from "./ui/input";
-import { Aperture, Loader2 } from "lucide-react";
+import { Aperture, Loader2, LogIn, ShieldCheck, UserCheck } from "lucide-react";
 import { useState } from "react";
 
 const loginFormSchema = z.object({
@@ -118,9 +118,10 @@ function LoginForm() {
           <Button
             variant={"default"}
             type="submit"
-            className="w-full"
+            className="w-full flex flex-row justify-center items-center space-x-2"
             disabled={isPending}
           >
+            <LogIn />
             {isPending ? (
               <div className="flex flex-row justify-center items-center gap-2">
                 <Loader2 className="animate-spin" />
@@ -132,6 +133,29 @@ function LoginForm() {
           </Button>
         </form>
       </Form>
+
+      <div className="w-full flex flex-row justify-between items-center space-x-2">
+        <Button
+          className="w-1/2 flex flex-row justify-center items-center"
+          variant="outline"
+          onClick={() => {
+            form.setValue("email", "adminuser@test.com");
+            form.setValue("password", "AdminUser1*");
+          }}
+        >
+          <ShieldCheck /> Try as Admin
+        </Button>
+        <Button
+          className="w-1/2 flex flex-row justify-center items-center"
+          variant="outline"
+          onClick={() => {
+            form.setValue("email", "testuser@test.com");
+            form.setValue("password", "TestUser*");
+          }}
+        >
+          <UserCheck /> Try as User
+        </Button>
+      </div>
 
       {/* Footer */}
       <p className="text-center text-sm text-gray-600">

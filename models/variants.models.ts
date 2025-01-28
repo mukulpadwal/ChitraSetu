@@ -44,10 +44,10 @@ export interface IVariant {
     height: number;
   };
   label: ImageVariantLabelType;
-  imageUrl: string;
   downloadUrl: string;
   previewUrl: string;
   fileId: string;
+  filePath: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -69,13 +69,10 @@ const variantSchema = new Schema<IVariant>({
     required: true,
     min: 0,
   },
-  downloadUrl: { type: String },
+  downloadUrl: { type: String, required: true },
   previewUrl: { type: String },
   fileId: { type: String },
-  imageUrl: {
-    type: String,
-    required: true,
-  },
+  filePath: { type: String },
 });
 
 export const Variant =

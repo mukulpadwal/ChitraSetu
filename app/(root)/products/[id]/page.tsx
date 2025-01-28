@@ -138,7 +138,7 @@ const ProductPage = () => {
         <div className="md:max-w-7xl min-h-screen mx-auto sm:p-4">
           {/* Product Information */}
           <Card className="min-h-screen flex flex-col md:flex-row justify-around items-center p-4">
-            <CardContent className="md:w-6/12 p-4 flex items-center justify-center">
+            <CardContent className="w-full md:w-6/12 p-4 flex items-center justify-center">
               {selectedVariant?.filePath?.trim() && (
                 <div
                   className="relative w-full"

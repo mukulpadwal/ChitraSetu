@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import mongoose from "mongoose";
 import { IKImage } from "imagekitio-next";
 import toast from "react-hot-toast";
-import { IVariant } from "@/models/variants.models";
+import { IMAGE_VARIANTS, IVariant } from "@/models/variants.models";
 
 const ProductCard = ({ product }: { product: IProduct }) => {
   const { data: session, status } = useSession();
@@ -82,18 +82,38 @@ const ProductCard = ({ product }: { product: IProduct }) => {
           </CardHeader>
 
           <CardContent className="w-full flex justify-center items-center">
-            {selectedVariant?.previewUrl?.trim()?.length > 0 ? (
-              <div className="relative">
+            {selectedVariant?.filePath?.trim() && (
+              <div
+                className="relative w-full"
+                style={{
+                  aspectRatio:
+                    IMAGE_VARIANTS[selectedVariant?.type]?.dimensions.width /
+                    IMAGE_VARIANTS[selectedVariant?.type]?.dimensions.height,
+                }}
+              >
                 <IKImage
-                  src={selectedVariant?.previewUrl}
-                  height={selectedVariant.dimensions?.height || 400}
-                  width={selectedVariant.dimensions?.width || 400}
+                  path={selectedVariant?.filePath}
+                  lqip={{ active: true, quality: 20 }}
+                  transformation={[
+                    {
+                      height:
+                        IMAGE_VARIANTS[
+                          selectedVariant?.type
+                        ]?.dimensions.height.toString(),
+                      width:
+                        IMAGE_VARIANTS[
+                          selectedVariant?.type
+                        ]?.dimensions.width.toString(),
+                      focus: "center",
+                      quality: "10",
+                    },
+                    {
+                      raw: "l-text,i-ChitraSetu,lx-50,ly-50,tg-b,bg-black,pa-10,co-white,ff-SirinStencil-Regular.ttf,fs-45,rt-N45,l-end",
+                    },
+                  ]}
+                  loading="lazy"
                   alt={product?.name}
                 />
-              </div>
-            ) : (
-              <div className="w-[200px] h-[200px] flex justify-center items-center bg-gray-200">
-                No Image Available
               </div>
             )}
           </CardContent>

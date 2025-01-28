@@ -11,7 +11,7 @@ export async function GET() {
 
     const products: IProduct[] = await Product.find({}).populate({
       path: "variants",
-      select: "-owner -downloadUrl -imageUrl -fileId",
+      select: "-owner -downloadUrl -previewUrl -fileId",
       options: {
         strictPopulate: false,
       },

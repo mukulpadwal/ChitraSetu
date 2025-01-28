@@ -24,7 +24,7 @@ import toast from "react-hot-toast";
 import { IProduct } from "@/models/products.models";
 import mongoose from "mongoose";
 import { IKImage } from "imagekitio-next";
-import { IVariant } from "@/models/variants.models";
+import { IMAGE_VARIANTS, IVariant } from "@/models/variants.models";
 
 const ProductPage = () => {
   const { id }: { id: string } = useParams();
@@ -139,18 +139,38 @@ const ProductPage = () => {
           {/* Product Information */}
           <Card className="min-h-screen flex flex-col md:flex-row justify-around items-center p-4">
             <CardContent className="md:w-6/12 p-4 flex items-center justify-center">
-              {selectedVariant?.previewUrl?.trim() ? (
-                <div className="relative">
+              {selectedVariant?.filePath?.trim() && (
+                <div
+                  className="relative w-full"
+                  style={{
+                    aspectRatio:
+                      IMAGE_VARIANTS[selectedVariant?.type]?.dimensions.width /
+                      IMAGE_VARIANTS[selectedVariant?.type]?.dimensions.height,
+                  }}
+                >
                   <IKImage
-                    src={selectedVariant?.previewUrl}
+                    path={selectedVariant?.filePath}
+                    lqip={{ active: true, quality: 20 }}
+                    transformation={[
+                      {
+                        height:
+                          IMAGE_VARIANTS[
+                            selectedVariant?.type
+                          ]?.dimensions.height.toString(),
+                        width:
+                          IMAGE_VARIANTS[
+                            selectedVariant?.type
+                          ]?.dimensions.width.toString(),
+                        focus: "center",
+                        quality: "50",
+                      },
+                      {
+                        raw: "l-text,i-ChitraSetu,lx-50,ly-50,tg-b,bg-black,pa-10,co-white,ff-SirinStencil-Regular.ttf,fs-45,rt-N45,l-end",
+                      },
+                    ]}
+                    loading="lazy"
                     alt={product?.name as string}
-                    height={selectedVariant?.dimensions?.height || 500}
-                    width={selectedVariant?.dimensions?.width || 500}
                   />
-                </div>
-              ) : (
-                <div className="w-[225px] h-[225px] sm:w-[500px] sm:h-[500px] flex justify-center items-center bg-gray-200">
-                  No Image Available
                 </div>
               )}
             </CardContent>

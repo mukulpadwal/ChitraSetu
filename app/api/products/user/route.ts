@@ -20,7 +20,7 @@ export async function GET() {
     const products = await Product.find({ owner: session.user.id })
       .populate({
         path: "variants",
-        select: "-owner -downloadUrl -imageUrl -fileId",
+        select: "-owner -downloadUrl -previewUrl -fileId",
         options: {
           strictPopulate: false,
         },

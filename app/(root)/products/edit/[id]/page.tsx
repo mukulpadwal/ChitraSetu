@@ -23,7 +23,6 @@ import {
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -55,7 +54,6 @@ const editFormSchema = z.object({
 type EditFormSchemaType = z.infer<typeof editFormSchema>;
 
 function ProductEditPage() {
-  const { status } = useSession();
   const { id }: { id: string } = useParams();
   const router = useRouter();
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -82,10 +80,10 @@ function ProductEditPage() {
         _id: string;
         type: "SQUARE" | "WIDE" | "PORTRAIT";
         price: number;
-        imageUrl?: string;
         downloadUrl?: string;
         previewUrl?: string;
         fileId?: string;
+        filePath?: string;
         dimensions?: {
           width: number;
           height: number;
@@ -97,14 +95,10 @@ function ProductEditPage() {
       };
 
       if (variant.image) {
-        transformedVariant.imageUrl = variant.image.url;
         transformedVariant.downloadUrl = variant.image.url;
         transformedVariant.previewUrl = variant.image.thumbnailUrl;
         transformedVariant.fileId = variant.image.fileId;
-        transformedVariant.dimensions = {
-          width: variant.image.width,
-          height: variant.image.height,
-        };
+        transformedVariant.filePath = variant.image.filePath;
       }
 
       return transformedVariant;
@@ -138,6 +132,7 @@ function ProductEditPage() {
   };
 
   useEffect(() => {
+    setIsPending(true);
     fetch(`/api/products/${id}`)
       .then((response) => response.json())
       .then((data) => {
@@ -152,12 +147,13 @@ function ProductEditPage() {
           toast.error(data.message);
         }
       })
-      .catch(() => toast.error("Failed to fetch product details."));
+      .catch(() => toast.error("Failed to fetch product details."))
+      .finally(() => setIsPending(false));
   }, [id, form]);
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      {status === "loading" ? (
+      {isPending ? (
         <Loader />
       ) : (
         <Form {...form}>

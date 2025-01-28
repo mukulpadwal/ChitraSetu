@@ -16,7 +16,6 @@ type Order = {
     price: number;
     license: string;
     previewUrl: string;
-    imageUrl: string;
   };
   amount: number;
   status: string;

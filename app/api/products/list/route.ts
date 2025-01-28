@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     product = await Product.findById(product._id).populate({
       path: "variants",
-      select: "-owner -downloadUrl -imageUrl -fileId",
+      select: "-owner -downloadUrl -previewUrl -fileId",
       options: {
         strictPopulate: false,
       },

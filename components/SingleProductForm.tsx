@@ -89,10 +89,10 @@ function SingleProductForm() {
         {
           type: values.variant,
           price: values.price,
-          imageUrl: values?.image?.url,
           downloadUrl: values?.image?.url,
           previewUrl: values?.image?.thumbnailUrl,
           fileId: values?.image?.fileId,
+          filePath: values?.image?.filePath,
           dimensions: {
             width: values?.image?.width,
             height: values?.image?.height,

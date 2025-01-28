@@ -68,39 +68,41 @@ const OrdersPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {orders.map((order: IOrder) => (
                 <Card
-                  key={`${order?._id}-${(order.product as PopulatedProduct).name}`}
+                  key={`${order?._id}-${(order?.product as PopulatedProduct)?.name}`}
                   className="flex flex-col bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
                 >
                   {/* Image Section */}
                   <CardContent className="flex justify-center items-center p-4">
-                    <Image
-                      src={order?.variant?.imageUrl || "/placeholder.png"}
-                      alt={(order.product as PopulatedProduct).name}
-                      width={150}
-                      height={150}
-                      className="object-cover rounded-md shadow-lg"
-                    />
+                    {order?.variant?.previewUrl && (
+                      <Image
+                        src={order?.variant?.previewUrl}
+                        alt={(order?.product as PopulatedProduct)?.name}
+                        width={150}
+                        height={150}
+                        className="object-cover rounded-md shadow-lg"
+                      />
+                    )}
                   </CardContent>
 
                   {/* Details Section */}
                   <div className="flex-1 p-4">
                     <CardHeader>
                       <CardTitle className="text-xl font-semibold text-gray-800">
-                        {(order.product as PopulatedProduct).name}
+                        {(order?.product as PopulatedProduct)?.name}
                       </CardTitle>
                       <CardDescription className="text-gray-600">
-                        {order.variant.type} - Rs {order.variant.price}
+                        {order?.variant?.type} - Rs {order?.variant?.price}
                       </CardDescription>
                       <div
-                        className={`mt-2 text-sm font-semibold ${getStatusColor(order.status)}`}
+                        className={`mt-2 text-sm font-semibold ${getStatusColor(order?.status)}`}
                       >
-                        Status: {order.status}
+                        Status: {order?.status}
                       </div>
                       <div className="mt-2 text-sm text-gray-500">
                         Amount:{" "}
                         <span className="font-semibold text-gray-800">
-                          Rs {order.amount / 100}{" "}
-                          {order.status === "failed" &&
+                          Rs {order?.amount / 100}{" "}
+                          {order?.status === "failed" &&
                             "(Amount will be refunded in 5 to 7 business days in case the money was deducted from your account.)"}
                         </span>
                       </div>
@@ -108,13 +110,13 @@ const OrdersPage = () => {
 
                     <CardFooter className="flex flex-col gap-4 mt-4">
                       {/* Actions based on Order Status */}
-                      {order.status === "completed" && (
+                      {order?.status === "completed" && (
                         <>
                           <Button
                             variant="secondary"
                             className="w-full"
                             onClick={() =>
-                              window.open(order.variant.previewUrl, "_blank")
+                              window.open(order?.variant?.previewUrl, "_blank")
                             }
                           >
                             View Preview
@@ -125,7 +127,7 @@ const OrdersPage = () => {
                             className="w-full"
                             onClick={async () => {
                               try {
-                                const imageUrl = order.variant.imageUrl;
+                                const imageUrl = order.variant.downloadUrl;
                                 const response = await fetch(imageUrl, {
                                   mode: "cors",
                                 });
@@ -143,7 +145,10 @@ const OrdersPage = () => {
                                 link.click();
                                 URL.revokeObjectURL(blobUrl);
                               } catch (error) {
-                                console.error("Error downloading the image:", error);
+                                console.error(
+                                  "Error downloading the image:",
+                                  error
+                                );
                               }
                             }}
                           >

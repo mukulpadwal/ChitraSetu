@@ -24,7 +24,7 @@ export async function GET(
 
     const product = await Product.findById(id).populate({
       path: "variants",
-      select: "-owner -downloadUrl -imageUrl -fileId",
+      select: "-owner -downloadUrl -fileId",
       options: {
         strictPopulate: false,
       },
@@ -90,7 +90,7 @@ export async function PUT(
           type: variant.type,
           price: variant.price,
           fileId: variant.fileId,
-          imageUrl: variant.imageUrl,
+          filePath: variant.filePath,
           downloadUrl: variant.downloadUrl,
           previewUrl: variant.previewUrl,
           dimensions: {
@@ -115,7 +115,7 @@ export async function PUT(
       }
     ).populate({
       path: "variants",
-      select: "-owner -downloadUrl -imageUrl -fileId",
+      select: "-owner -downloadUrl -fileId",
       options: {
         strictPopulate: false,
       },

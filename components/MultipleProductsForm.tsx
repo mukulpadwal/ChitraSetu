@@ -96,10 +96,10 @@ function MultipleProductsForm() {
           return {
             type: variant.type,
             price: variant.price,
-            imageUrl: variant?.image?.url,
             downloadUrl: variant?.image?.url,
             previewUrl: variant?.image?.thumbnailUrl,
             fileId: variant?.image?.fileId,
+            filePath: variant?.image?.filePath,
             dimensions: {
               width: variant?.image?.width,
               height: variant?.image?.height,

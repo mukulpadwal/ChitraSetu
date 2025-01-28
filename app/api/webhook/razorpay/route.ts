@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         },
         {
           path: "variant",
-          select: "imageUrl previewUrl",
+          select: "downloadUrl previewUrl",
         },
       ]);
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
           name: order.product.name,
           description: order.product.description,
           amount: order.amount,
-          downloadUrl: order.variant.imageUrl,
+          downloadUrl: order.variant.downloadUrl,
         });
       }
     } else if (event?.event === "payment.failed") {
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         },
         {
           path: "variant",
-          select: "imageUrl previewUrl",
+          select: "previewUrl",
         },
       ]);
 
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         },
         {
           path: "variant",
-          select: "imageUrl previewUrl",
+          select: "previewUrl",
         },
       ]);
 

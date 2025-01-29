@@ -12,15 +12,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function DeleteAccountPage() {
+  const { data: session } = useSession();
   const [isPending, setIsPending] = useState<boolean>(false);
 
   const handleDeleteAccount = async () => {
     setIsPending(true);
+
+    if (
+      session?.user?.email === "adminuser@test.com" ||
+      session?.user?.email === "testuser@test.com"
+    ) {
+      toast.error("You cannot delete demo accounts.");
+      setIsPending(false);
+      return;
+    }
 
     fetch("/api/auth/delete", {
       method: "DELETE",

@@ -38,6 +38,11 @@ export default function RootLayout({
           <Footer />
           <Toaster />
         </Providers>
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="c80d2af5-2970-47bd-9586-bb7bddf0a632"
+        ></script>
       </body>
     </html>
   );

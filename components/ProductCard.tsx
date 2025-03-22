@@ -105,7 +105,7 @@ const ProductCard = ({ product }: { product: IProduct }) => {
                           selectedVariant?.type
                         ]?.dimensions.width.toString(),
                       focus: "center",
-                      quality: "10",
+                      quality: Number("10"),
                     },
                     {
                       raw: "l-text,i-ChitraSetu,lx-50,ly-50,tg-b,bg-black,pa-10,co-white,ff-SirinStencil-Regular.ttf,fs-45,rt-N45,l-end",
